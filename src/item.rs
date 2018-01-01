@@ -9,7 +9,7 @@ use std::fs::File;
 use std::io;
 use std::path::Path;
 
-#[derive(Debug,Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Item {
     //主机头，*表示通配
     pub host: String,
@@ -48,31 +48,40 @@ impl ItemManager {
     }
     // 检查目录，并初始化
     fn check(&self) -> io::Result<()> {
+        let mut exists = false;
         for entry in fs::read_dir(&self.conf_path)? {
-            let entry = entry?;
-            if entry.path().to_str().unwrap().ends_with(".conf") {
-                return Ok(());
+            let path = entry?.path();
+            let file_path = path.to_str().unwrap();
+            if file_path.ends_with(".conf") {
+                self.load_from(file_path);
+                exists = true;
             }
         }
         // 未找到配置文件初始化一个示例
-        let mut map = HashMap::new();
-        map.insert("/a".to_owned(), "http://a.com/{path}{query}{timestamp}".to_owned());
-        map.insert("/a/*".to_owned(), "http://a.com/t-{*}".to_owned());
-        map.insert("/1/2/3/".to_owned(), "http://a.com/{#0}-{#1}-{#2}".to_owned());
-        let it = &Item {
-            host: "localhost localhost:8302 *.to2.net".to_owned(),
-            to: "http://www.to2.net/{path}{query}".to_owned(),
-            location: map,
-        };
-        let arr = [it];
-        let r = File::create(self.conf_path.to_owned()+"default.conf");
-        if r.is_err(){
-            return Err((r.unwrap_err()));
+        if !exists {
+            let mut map = HashMap::new();
+            map.insert("/a".to_owned(), "http://a.com/{path}{query}{timestamp}".to_owned());
+            map.insert("/a/*".to_owned(), "http://a.com/t-{*}".to_owned());
+            map.insert("/1/2/3/".to_owned(), "http://a.com/{#0}-{#1}-{#2}".to_owned());
+            let it = &Item {
+                host: "localhost localhost:8302 *.to2.net".to_owned(),
+                to: "http://www.to2.net/{path}{query}".to_owned(),
+                location: map,
+            };
+            let r = File::create(self.conf_path.to_owned() + "default.conf");
+            if r.is_err() {
+                return Err((r.unwrap_err()));
+            }
+            serde_json::to_writer_pretty(r.unwrap(), &[it]);
         }
-       // let s = serde_json::to_string_pretty(&arr).unwrap();
-       // println!("{}",&s);
-        serde_json::to_writer_pretty(r.unwrap(),&arr);
         return Ok(());
+    }
+
+    fn load_from(&self,path: &str) -> Result<bool,&str> {
+        if 1 >0{
+            return Err("error");
+        }
+        return Ok(true);
     }
 
     fn visit_dirs(&self, dir: &Path, pattern: &String, cb: &Fn(&DirEntry, &String)) -> io::Result<()> {
@@ -91,31 +100,7 @@ impl ItemManager {
         }
         Ok(())
     }
-    /*
-    // 检查目录，并初始化
-func (i *ItemManager) checkDir(path string) {
-	_, err := os.Stat(path)
-	//创建目录
-	if os.IsNotExist(err) {
-		os.MkdirAll(path, os.ModePerm)
-		i.initExample(path)
-	} else {
-		//是否存在.conf文件,不存在，则初始化
-		fi, _ := os.Open(path)
-		exits := false
-		list, _ := fi.Readdirnames(-1)
-		for _, v := range list {
-			if strings.HasSuffix(v, ".conf") {
-				exits = true
-			}
-		}
-		if !exits {
-			i.initExample(path)
-		}
-	}
-}
 
-*/
 
     // 根据主机名获取相应的配置,如果无匹配，则默认使用localhost
     pub fn get_item(&self, host: &String) -> Option<&Item> {
