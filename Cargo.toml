@@ -1,0 +1,9 @@
+[package]
+name = "gord"
+version = "0.1.0"
+authors = ["jarryliu <jarrysix@gmail.com>"]
+
+[dependencies]
+rand = "~0.4.0"
+clap = "~2.32"
+iron = "~0.6"
