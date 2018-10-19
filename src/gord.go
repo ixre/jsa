@@ -195,7 +195,6 @@ func (i *ItemManager) Append(items []*Item) {
 	}
 }
 
-
 var _ http.Handler = new(HttpHandler)
 
 type HttpHandler struct {

@@ -6,7 +6,6 @@ use self::iron::IronResult;
 use self::iron::Request;
 use self::iron::Response;
 use self::iron::status;
-use std::collections::HashMap;
 
 const GLOB_DEBUG: bool = !false;
 
