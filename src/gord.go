@@ -195,27 +195,6 @@ func (i *ItemManager) Append(items []*Item) {
 	}
 }
 
-// 根据主机名获取相应的配置,如果无匹配，则默认使用localhost
-func (i *ItemManager) GetItemByHost(host string) *Item {
-	for k, v := range i.items {
-		if i.matchHost(k, host) {
-			return v
-		}
-	}
-	return i.items["localhost"]
-}
-
-// 匹配主机
-func (i *ItemManager) matchHost(cfgHost, host string) bool {
-	if host == cfgHost {
-		return true
-	}
-	// 判断是否泛解析
-	if strings.HasPrefix(cfgHost, "*.") {
-		return strings.HasSuffix(host, cfgHost[2:])
-	}
-	return false
-}
 
 var _ http.Handler = new(HttpHandler)
 
