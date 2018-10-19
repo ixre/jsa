@@ -1,8 +1,11 @@
 extern crate clap;
 extern crate iron;
+extern crate jrd;
 
 use clap::{App, Arg};
 use iron::prelude::Iron;
+use jrd::core::Entry;
+
 include!("lib.rs");
 
 fn main() {
@@ -18,13 +21,9 @@ fn main() {
     let conf = matches.value_of("conf").unwrap();
     let debug = matches.is_present("debug");
     let _port = matches.value_of("port").unwrap();
-    println!("conf is {:?}", conf);
-    println!("conf is {:?}", debug);
-
-    let mut addr: String = "0.0.0.0:".to_string() + _port;
-    let entry = jrd::Entry::new(conf.to_string(), debug);
-    //println!("{:#?}",entry::req_entry);
+    let addr: String = "0.0.0.0:".to_string() + _port;
+    let entry = Entry::new(conf.to_string(), debug);
     let _server = Iron::new(entry).http(addr).unwrap();
-    println!("serve on port {}", _port);
+    println!("[ Jrd][ Serve]: serve on port {}", _port);
 }
 

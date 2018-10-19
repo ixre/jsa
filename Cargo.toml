@@ -1,7 +1,8 @@
 [package]
-name = "gord"
+name = "jrd"
 version = "0.1.0"
 authors = ["jarryliu <jarrysix@gmail.com>"]
+
 
 [dependencies]
 rand = "~0.4.0"

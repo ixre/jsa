@@ -1,1 +1,2 @@
-pub mod jrd;
+pub mod core;
+pub mod conf;
