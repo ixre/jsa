@@ -1,13 +1,10 @@
 extern crate serde;
 extern crate serde_json;
-
-
 use std::collections::HashMap;
 use std::fs;
 use std::fs::DirEntry;
 use std::fs::File;
 use std::io;
-use std::path::Path;
 use std::process::exit;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -92,7 +89,7 @@ impl ItemManager {
         return Ok(true);
     }
 
-    fn append(& mut self, items: & Vec<Item>) {
+    fn append(&mut self, items: &Vec<Item>) {
         for it in items {
             let host_arr: Vec<&str> = it.host.split(" ").collect();
             for host in host_arr {
@@ -100,28 +97,10 @@ impl ItemManager {
                     println!("[ Jrd][ Panic]: host {} already exists", host);
                     exit(1);
                 }
-                self.items.insert(host.to_owned(),it.clone());
+                self.items.insert(host.to_owned(), it.clone());
             }
         }
     }
-
-    fn visit_dirs(&self, dir: &Path, pattern: &String, cb: &Fn(&DirEntry, &String)) -> io::Result<()> {
-        if fs::metadata(dir)?.is_dir() {
-            for entry in fs::read_dir(dir)? {
-                let entry = entry?;
-                if fs::metadata(entry.path())?.is_dir() {
-                    self.visit_dirs(&entry.path(), pattern, cb)?;
-                } else {
-                    cb(&entry, pattern);
-                }
-            }
-        } else {
-            let entry = fs::read_dir(dir)?.next().unwrap()?;
-            cb(&entry, pattern);
-        }
-        Ok(())
-    }
-
 
     // 根据主机名获取相应的配置,如果无匹配，则默认使用localhost
     pub fn get_item(&self, host: &String) -> Option<&Item> {
