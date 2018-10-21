@@ -8,6 +8,7 @@ use self::iron::Response;
 use self::iron::status;
 use self::iron::Url;
 use std::collections::HashMap;
+use std::time;
 
 const GLOB_DEBUG: bool = false;
 
@@ -36,7 +37,7 @@ impl Entry {
 impl Entry {
     //查找匹配
     fn get_target<'a>(&self, path: &str, location_maps: &'a HashMap<String, String>,
-                      default: &'a str) -> &'a str {
+                      default: &'a str) -> (&'a str,usize) {
         let mut target = default;
         let mut any_match_pos: usize = 0;
         for (k, v) in location_maps {
@@ -57,13 +58,63 @@ impl Entry {
                 }
             }
         }
-        return target;
+        return (target,any_match_pos);
     }
     fn get_location<'a>(&self, r: &Request, path: &str, segments: Vec<&str>, query: &str, it: &'a Item) -> &'a str {
-        let target = self.get_target(path, &it.location, &it.to);
-        if target == ""{
-            return target;
+        let tuple = self.get_target(&path, &it.location, &it.to);
+        let mut target = tuple.0.to_string();
+        let pos = tuple.1;
+        if target == "" {
+            return "";
         }
+        //路径通配
+        if target.contains("{*}") || pos >=0 {
+            target = target.replace("{*}", &path[pos..]);
+        }
+        // 全局请求跳转路径,{path}表示完整的路径；
+        if target.contains("{path}") {
+            target = target.replace("{path}", &path[1..]);
+        }
+        // 处理查询条件，{query}表示查询条件
+        let concat = if query == "" { "" } else { "?" };
+        let qt = target.contains("{query}");
+        if qt {
+            target = target.replace("{query}", &(concat.to_owned() + query));
+        }
+        // 加上时间戳请求 {timestamp}会返回时间戳
+        if target.contains("{timestamp}") {
+            let unix = time::SystemTime::now().duration_since(time::UNIX_EPOCH)
+                .unwrap().as_secs();
+            let mut unix = unix.to_string();
+            if !qt || concat == "" {
+                unix = "?_stamp=".to_owned() + &unix
+            } else {
+                unix = "&_stamp=".to_owned() + &unix
+            }
+            target = target.replace("{timestamp}", unix.as_str())
+        }
+
+
+        /*
+             // {query}表示查询条件
+
+             // {timestamp}会返回时间戳
+
+             //路径通配
+             if strings.Contains(target, "{*}") && anyMatchPos != -1 {
+                 target = strings.Replace(target, "{*}", path[anyMatchPos:], -1)
+             }
+             //匹配含有路径片段的URL,{#序号}表示指定的路径片段
+             if strings.Contains(target, "{#") {
+                 segments := strings.Split(path[1:], "/")
+                 for i, l := 0, len(segments); i < l; i++ {
+                     target = strings.Replace(target, "{#"+strconv.Itoa(i)+"}",
+                                              segments[i], -1)
+                 }
+             }
+             debugLog("--- origin:", path, "; target:", target)
+             return target, true
+     */
         //let path = r.url.as_ref().query().unwrap();
         println!("{:#?}", target);
         return "";
@@ -74,7 +125,7 @@ impl Entry {
 impl iron::Handler for Entry {
     // 处理请求
     fn handle(&self, r: &mut Request) -> IronResult<Response> {
-        let mut segments = r.url.path();
+        let segments = r.url.path();
         // get path
         let mut path = segments.join("/");
         path.insert(0, '/');
