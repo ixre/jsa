@@ -1,10 +1,10 @@
 extern crate clap;
 extern crate iron;
-extern crate jsd;
+extern crate jsa;
 
 use clap::{App, Arg};
 use iron::prelude::Iron;
-use jsd::http::Entry;
+use jsa::http::Entry;
 
 fn main() {
     let args = [
