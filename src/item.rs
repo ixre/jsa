@@ -8,8 +8,9 @@ use std::fs::DirEntry;
 use std::fs::File;
 use std::io;
 use std::path::Path;
+use std::process::exit;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Item {
     //主机头，*表示通配
     pub host: String,
@@ -36,18 +37,18 @@ pub struct ItemManager {
 
 impl ItemManager {
     pub fn new(path: String) -> Result<ItemManager, String> {
-        let it = ItemManager {
+        let mut it = ItemManager {
             conf_path: path,
             items: HashMap::new(),
         };
-        &it.load();
+        it.load();
         return Ok(it);
     }
-    fn load(&self) {
+    fn load(&mut self) {
         self.check();
     }
     // 检查目录，并初始化
-    fn check(&self) -> io::Result<()> {
+    fn check(&mut self) -> io::Result<()> {
         let mut exists = false;
         for entry in fs::read_dir(&self.conf_path)? {
             let path = entry?.path();
@@ -63,7 +64,7 @@ impl ItemManager {
             map.insert("/a".to_owned(), "http://a.com/{path}{query}{timestamp}".to_owned());
             map.insert("/a/*".to_owned(), "http://a.com/t-{*}".to_owned());
             map.insert("/1/2/3/".to_owned(), "http://a.com/{#0}-{#1}-{#2}".to_owned());
-            let it = &Item {
+            let it = Item {
                 host: "localhost localhost:8302 *.to2.net".to_owned(),
                 to: "http://www.to2.net/{path}{query}".to_owned(),
                 location: map,
@@ -72,16 +73,36 @@ impl ItemManager {
             if r.is_err() {
                 return Err((r.unwrap_err()));
             }
-            serde_json::to_writer_pretty(r.unwrap(), &[it]);
+            let vec = vec!(it);
+            self.append(&vec);
+            serde_json::to_writer_pretty(r.unwrap(), &vec);
         }
         return Ok(());
     }
 
-    fn load_from(&self,path: &str) -> Result<bool,&str> {
-        if 1 >0{
+    // load items from a file
+    fn load_from(&mut self, path: &str) -> Result<bool, &str> {
+        let fi = File::open(path).unwrap();
+        let items: Vec<Item> = serde_json::from_reader(fi)
+            .expect(&("can't read config from file :".to_owned() + path));
+        self.append(&items);
+        if 1 > 0 {
             return Err("error");
         }
         return Ok(true);
+    }
+
+    fn append(& mut self, items: & Vec<Item>) {
+        for it in items {
+            let host_arr: Vec<&str> = it.host.split(" ").collect();
+            for host in host_arr {
+                if self.items.contains_key(host) {
+                    println!("[ Jrd][ Panic]: host {} already exists", host);
+                    exit(1);
+                }
+                self.items.insert(host.to_owned(),it.clone());
+            }
+        }
     }
 
     fn visit_dirs(&self, dir: &Path, pattern: &String, cb: &Fn(&DirEntry, &String)) -> io::Result<()> {
