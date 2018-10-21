@@ -1,7 +1,6 @@
 extern crate clap;
 extern crate iron;
 extern crate jrd;
-
 use clap::{App, Arg};
 use iron::prelude::Iron;
 use jrd::core::Entry;

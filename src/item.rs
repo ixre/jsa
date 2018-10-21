@@ -1,13 +1,15 @@
+extern crate serde;
+extern crate serde_json;
+
+
 use std::collections::HashMap;
 use std::fs;
 use std::fs::DirEntry;
 use std::fs::File;
 use std::io;
-use std::io::ErrorKind;
 use std::path::Path;
-use std::process::exit;
 
-#[derive(Debug)]
+#[derive(Debug,Serialize, Deserialize)]
 pub struct Item {
     //主机头，*表示通配
     pub host: String,
@@ -63,6 +65,13 @@ impl ItemManager {
             location: map,
         };
         let arr = [it];
+        let r = File::create(self.conf_path.to_owned()+"default.conf");
+        if r.is_err(){
+            return Err((r.unwrap_err()));
+        }
+       // let s = serde_json::to_string_pretty(&arr).unwrap();
+       // println!("{}",&s);
+        serde_json::to_writer_pretty(r.unwrap(),&arr);
         return Ok(());
     }
 
