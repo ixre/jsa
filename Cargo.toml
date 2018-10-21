@@ -5,9 +5,8 @@ authors = ["jarryliu <jarrysix@gmail.com>"]
 
 
 [dependencies]
-rand = "~0.4.0"
 clap = "~2.32"
 iron = "~0.6"
-serde = "1.0"
-serde_json = "1.0"
-serde_derive = "1.0"
+serde = "~1.0"
+serde_json = "~1.0"
+serde_derive = "~1.0"

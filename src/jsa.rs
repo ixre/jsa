@@ -47,12 +47,12 @@ impl Item {
         return (target, any_match_pos);
     }
     // 获取目标地址
-    pub fn get_location<'a>(&self, path: &'a str, query: &'a str, segments:Vec<&str>) -> &'a str {
+    pub fn get_location<'a>(&self, path: &'a str, query: &'a str, segments: Vec<&str>) -> String {
         let tuple = self.get_target(&path);
         let mut target = tuple.0.to_string();
         let pos = tuple.1;
         if target == "" {
-            return "";
+            return String::from("");
         }
         // 全局请求跳转路径,{path}表示完整的路径；
         if target.contains("{path}") {
@@ -95,10 +95,8 @@ impl Item {
                 i += 1;
             }
         }
-        return "";
-        //let x = target.clone();
-        //return x.as_str();
         //println!("{:#?}", target);
+        return target;
     }
 }
 
@@ -143,8 +141,8 @@ impl ItemManager {
             map.insert("/a/b".to_owned(), "http://a.com/{path}{query}{timestamp}".to_owned());
             map.insert("/a/b/c".to_owned(), "http://a.com/{#0}-{#1}-{#2}".to_owned());
             let it = Item {
-                host: "localhost localhost:8302 *.to2.net".to_owned(),
-                to: "http://www.to2.net/{path}{query}".to_owned(),
+                host: "localhost *.a.com".to_owned(),
+                to: "http://www.google.com/{path}{query}".to_owned(),
                 location: map,
             };
             let r = File::create(self.conf_path.to_owned() + "default.conf");
