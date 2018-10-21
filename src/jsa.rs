@@ -112,6 +112,10 @@ pub struct ItemManager {
 
 impl ItemManager {
     pub fn new(path: String) -> Result<ItemManager, String> {
+        let mut path = path;
+        if !path.ends_with("/") {
+            path = path + "/";
+        }
         let mut it = ItemManager {
             conf_path: path,
             items: HashMap::new(),
@@ -125,12 +129,19 @@ impl ItemManager {
     // 检查目录，并初始化
     fn check(&mut self) -> io::Result<()> {
         let mut exists = false;
-        for entry in fs::read_dir(&self.conf_path)? {
-            let path = entry?.path();
-            let file_path = path.to_str().unwrap();
-            if file_path.ends_with(".conf") {
-                self.load_from(file_path);
-                exists = true;
+        let r = fs::read_dir(&self.conf_path);
+        if r.is_err() {
+            if r.unwrap_err().kind() == io::ErrorKind::NotFound {
+                fs::create_dir(&self.conf_path);
+            }
+        }else {
+            for entry in r? {
+                let path = entry?.path();
+                let file_path = path.to_str().unwrap();
+                if file_path.ends_with(".conf") {
+                    self.load_from(file_path);
+                    exists = true;
+                }
             }
         }
         // 未找到配置文件初始化一个示例
@@ -149,6 +160,7 @@ impl ItemManager {
             if r.is_err() {
                 return Err((r.unwrap_err()));
             }
+            println!("{}", self.conf_path.to_owned());
             let vec = vec!(it);
             self.append(&vec);
             serde_json::to_writer_pretty(r.unwrap(), &vec);
