@@ -6,10 +6,8 @@
 FROM ekidd/rust-musl-builder AS builder
 # Add our source code.
 ADD . ./
-# Fix permissions on source code.
-RUN sudo chown -R rust:rust /home/rust
-# Build our application.
-RUN cargo build --release
+# Fix permissions on source code and Build our application.
+RUN sudo chown -R rust:rust ../ && cargo build --release
 
 FROM alpine:latest
 MAINTAINER jarrysix
