@@ -22,7 +22,7 @@ COPY --from=builder \
 
 VOLUME ["/jsa"]
 EXPOSE 8302
-ENTRYPOINT jsa --conf /jsa
+ENTRYPOINT jsa -c /jsa
 
 
 
