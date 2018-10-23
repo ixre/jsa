@@ -35,11 +35,12 @@ impl Item {
         for (k, v) in location_maps {
             //匹配如：/d/* 含通配符的路径
             if k.ends_with("*") {
-                any_match_pos = k.len() - 1; //通配符所在的索引位置
-                let anyMatch = path.starts_with(&k[0..any_match_pos]);
+                let pos = k.len() - 1; //通配符所在的索引位置
+                let anyMatch = path.starts_with(&k[0..pos]);
                 //debugLog(&["[ Compare]:判断通配:".to_owned(), &k[0..any_match_pos]]);
                 if anyMatch {
                     target = v;
+                    any_match_pos = pos;
                     break;
                 }
             }
