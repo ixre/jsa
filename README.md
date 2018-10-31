@@ -26,7 +26,8 @@ host项支持通配，如: *.a.com 能匹配 a.com 所有子域名; 如host包�
       "/a": "http://a.com/a{timestamp}",
       "/a/b": "http://a.com/{path}{query}{timestamp}",
       "/a/*": "http://a.com/t-{*}",
-      "/a/b/c": "http://a.com/{#0}-{#1}-{#2}"
+      "/a/b/c": "http://a.com/{#0}-{#1}-{#2}",
+      "/a/get-os": "http://a.com/?os={os}"
     }
   }
 ]
@@ -74,3 +75,17 @@ docker run -d --name jsa --volume /var/jsa:/jsa -p 8302:8302 --restart always ja
 }
 ```
 
+### 识别系统
+如需要在不同环境中访问相同地址，参考如下配置：
+```
+ {
+    "host": "localhost",
+    "to": "http://www.google.com/{path}{query}",
+    "location": {
+      "/a/get-os": "/goto/{os}",
+      "/goto/mac": "http://a.com/get-os/mac",
+      "/goto/windows": "http://a.com/get-os/windows"
+      "/goto/linux": "http://a.com/get-os/linux",
+    }
+  }
+```

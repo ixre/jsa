@@ -9,6 +9,7 @@ use self::iron::status;
 use self::iron::Url;
 use std::collections::HashMap;
 use std::time;
+use std::str;
 
 const GLOB_DEBUG: bool = false;
 
@@ -50,12 +51,20 @@ impl iron::Handler for Entry {
         let item = self.item_manager.get_item(&host);
         debug_log(&[String::from("source host"), host]);
         if !item.is_none() {
+            // get query params
             let qn = r.url.query();
             let mut query = "";
             if qn.is_some() {
                 query = qn.unwrap();
             }
-            let location = item.unwrap().get_location(path, query, segments);
+            // get user_agent
+            let mut user_agent = "";
+            let opt = r.headers.get_raw("User-Agent");
+            if opt.is_some() {
+                let v = opt.unwrap().get(0).unwrap();
+                user_agent = str::from_utf8(&v).unwrap();
+            }
+            let location = item.unwrap().get_location(path, query, segments, user_agent);
             if location.len() > 0 {
                 let mut rsp = Response::with(status::Found);
                 rsp.headers.set(headers::Location(location.to_string()));

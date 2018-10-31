@@ -47,8 +47,27 @@ impl Item {
         }
         return (target, any_match_pos);
     }
+
+    // 替换系统{os}标签
+    pub fn replace_os_tag(&self, target: String, user_agent: String) -> String {
+        let mut os = "";
+        if user_agent.eq("") {
+            return target;
+        }
+        if user_agent.contains("Mac") {
+            os = "mac";
+        } else if user_agent.contains("Windows") {
+            os = "windows";
+        } else if user_agent.contains("Linux") {
+            os = "linux";
+        } else {
+            os = "unknown";
+        }
+        return target.replace("{os}", os);
+    }
+
     // 获取目标地址
-    pub fn get_location<'a>(&self, path: &'a str, query: &'a str, segments: Vec<&str>) -> String {
+    pub fn get_location<'a>(&self, path: &'a str, query: &'a str, segments: Vec<&str>, user_agent: &'a str) -> String {
         let tuple = self.get_target(&path);
         let mut target = tuple.0.to_string();
         let pos = tuple.1;
@@ -71,17 +90,21 @@ impl Item {
                 .unwrap().as_secs();
             let mut unix = unix.to_string();
             if !qt || concat == "" {
-                unix = "?_stamp=".to_owned() + &unix
+                unix = "?_stamp=".to_owned() + &unix;
             } else {
-                unix = "&_stamp=".to_owned() + &unix
+                unix = "&_stamp=".to_owned() + &unix;
             }
-            target = target.replace("{timestamp}", unix.as_str())
+            target = target.replace("{timestamp}", unix.as_str());
         }
-        //路径通配
+        // 检测OS
+        if target.contains("{os}") {
+            target = self.replace_os_tag(target, user_agent.to_owned());
+        }
+        // 路径通配
         if target.contains("{*}") || pos >= 0 {
             target = target.replace("{*}", &path[pos..]);
         }
-        //匹配含有路径片段的URL,{#序号}表示指定的路径片段
+        // 匹配含有路径片段的URL,{#序号}表示指定的路径片段
         if target.contains("{#") {
             let mut i = 0;
             for seg in &segments {
@@ -135,7 +158,7 @@ impl ItemManager {
             if r.unwrap_err().kind() == io::ErrorKind::NotFound {
                 fs::create_dir(&self.conf_path);
             }
-        }else {
+        } else {
             for entry in r? {
                 let path = entry?.path();
                 let file_path = path.to_str().unwrap();
@@ -152,6 +175,7 @@ impl ItemManager {
             map.insert("/a/*".to_owned(), "http://a.com/t-{*}".to_owned());
             map.insert("/a/b".to_owned(), "http://a.com/{path}{query}{timestamp}".to_owned());
             map.insert("/a/b/c".to_owned(), "http://a.com/{#0}-{#1}-{#2}".to_owned());
+            map.insert("/a/get-os".to_owned(), "http://a.com/?os={os}".to_owned());
             let it = Item {
                 host: "localhost *.a.com".to_owned(),
                 to: "http://www.google.com/{path}{query}".to_owned(),
