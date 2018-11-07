@@ -107,7 +107,7 @@ impl Item {
         // 匹配含有路径片段的URL,{#序号}表示指定的路径片段
         if target.contains("{#") {
             let mut i = 0;
-            for seg in &segments {
+            for _seg in &segments {
                 let mut dst = String::from("{#");
                 dst.push_str(&i.to_string());
                 dst.push_str(&"}");
@@ -183,7 +183,7 @@ impl ItemManager {
             };
             let r = File::create(self.conf_path.to_owned() + "default.conf");
             if r.is_err() {
-                return Err((r.unwrap_err()));
+                return Err(r.unwrap_err());
             }
             println!("{}", self.conf_path.to_owned());
             let vec = vec!(it);

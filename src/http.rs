@@ -1,6 +1,6 @@
 extern crate iron;
 
-use jsa::{Item, ItemManager};
+use crate::jsa::{Item, ItemManager};
 use self::iron::headers;
 use self::iron::IronResult;
 use self::iron::Request;

@@ -4,5 +4,7 @@
 # docker build -t jarry6/jsa . && docker push jarry6/jsa:latest
 
 docker run --rm -it -v $(pwd):/home/rust/src ekidd/rust-musl-builder \
-cargo build --release --target x86_64-unknown-linux-musl
+cargo build --release --target x86_64-unknown-linux-musl && \
+cargo build --release --target x86_64-pc-windows-msvc && \
+cargo build --release --target x86_64-apple-darwin
 
