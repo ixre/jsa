@@ -52,16 +52,10 @@ impl Item {
         if user_agent.eq("") {
             return target;
         }
-        let os = if user_agent.contains("Mac") {
-            "mac"
-        } else if user_agent.contains("Windows") {
-            "windows"
-        } else if user_agent.contains("Linux") {
-            "linux"
-        } else {
-            "unknown"
-        };
-        return target.replace("{os}", os);
+        let os = ["Mac", "Windows", "Linux"].iter().find_map(|os| {
+            if user_agent.contains(os) { Some(os.to_lowercase()) } else { None }
+        }).unwrap_or(String::from("unknown"));
+        return target.replace("{os}", os.as_str());
     }
 
     // 获取目标地址
