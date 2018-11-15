@@ -1,21 +1,18 @@
 extern crate iron;
 
-use crate::jsa::{Item, ItemManager};
+use crate::jsa:: ItemManager;
 use self::iron::headers;
 use self::iron::IronResult;
 use self::iron::Request;
 use self::iron::Response;
 use self::iron::status;
-use self::iron::Url;
-use std::collections::HashMap;
-use std::time;
 use std::str;
 
 const GLOB_DEBUG: bool = false;
 
 fn debug_log(s: &[String]) {
     if GLOB_DEBUG {
-        println!("[ Jrd][ Log]: {}", s.join(" "))
+        println!("[ Jsa][ Log]: {}", s.join(" "))
     }
 }
 
@@ -48,23 +45,19 @@ impl iron::Handler for Entry {
             return Ok(Response::with(status::NotFound));
         }
         let host = r.url.host().to_string();
-        let item = self.item_manager.get_item(&host);
+        let it = self.item_manager.get_item(&host);
         debug_log(&[String::from("source host"), host]);
-        if !item.is_none() {
+        if let Some(item) = it {
             // get query params
-            let qn = r.url.query();
-            let mut query = "";
-            if qn.is_some() {
-                query = qn.unwrap();
-            }
+            let query = if let Some(q) = r.url.query() { q } else { "" };
             // get user_agent
-            let mut user_agent = "";
             let opt = r.headers.get_raw("User-Agent");
+            let mut user_agent = "";
             if opt.is_some() {
                 let v = opt.unwrap().get(0).unwrap();
                 user_agent = str::from_utf8(&v).unwrap();
             }
-            let location = item.unwrap().get_location(path, query, segments, user_agent);
+            let location = item.get_location(path, query, segments, user_agent);
             if location.len() > 0 {
                 let mut rsp = Response::with(status::Found);
                 rsp.headers.set(headers::Location(location.to_string()));

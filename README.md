@@ -1,4 +1,4 @@
-# Jrd 
+# Jsa 
 一个使用Rust编写的短域名，及302跳转的小应用。
 
 [另外一个用go语言编写的程序](https://github.com/jsix/gord)

@@ -22,6 +22,6 @@ fn main() {
     let addr: String = "0.0.0.0:".to_string() + _port;
     let entry = Entry::new(conf.to_string(), debug);
     let _server = Iron::new(entry).http(addr).unwrap();
-    println!("[ Jrd][ Serve]: serve on port {}", _port);
+    println!("[ Jsa][ Serve]: serve on port {}", _port);
 }
 

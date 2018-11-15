@@ -3,7 +3,6 @@ extern crate serde_json;
 
 use std::collections::HashMap;
 use std::fs;
-use std::fs::DirEntry;
 use std::fs::File;
 use std::io;
 use std::process::exit;
@@ -36,9 +35,9 @@ impl Item {
             //匹配如：/d/* 含通配符的路径
             if k.ends_with("*") {
                 let pos = k.len() - 1; //通配符所在的索引位置
-                let anyMatch = path.starts_with(&k[0..pos]);
+                let any_match = path.starts_with(&k[0..pos]);
                 //debugLog(&["[ Compare]:判断通配:".to_owned(), &k[0..any_match_pos]]);
-                if anyMatch {
+                if any_match {
                     target = v;
                     any_match_pos = pos;
                     break;
@@ -50,19 +49,18 @@ impl Item {
 
     // 替换系统{os}标签
     pub fn replace_os_tag(&self, target: String, user_agent: String) -> String {
-        let mut os = "";
         if user_agent.eq("") {
             return target;
         }
-        if user_agent.contains("Mac") {
-            os = "mac";
+        let os = if user_agent.contains("Mac") {
+            "mac"
         } else if user_agent.contains("Windows") {
-            os = "windows";
+            "windows"
         } else if user_agent.contains("Linux") {
-            os = "linux";
+            "linux"
         } else {
-            os = "unknown";
-        }
+            "unknown"
+        };
         return target.replace("{os}", os);
     }
 
@@ -101,25 +99,20 @@ impl Item {
             target = self.replace_os_tag(target, user_agent.to_owned());
         }
         // 路径通配
-        if target.contains("{*}") || pos >= 0 {
+        if target.contains("{*}") || pos as i32 > -1 {
             target = target.replace("{*}", &path[pos..]);
         }
         // 匹配含有路径片段的URL,{#序号}表示指定的路径片段
         if target.contains("{#") {
             let mut i = 0;
-            for _seg in &segments {
+            for seg in &segments {
                 let mut dst = String::from("{#");
                 dst.push_str(&i.to_string());
                 dst.push_str(&"}");
-                let v = segments.get(i);
-                if v.is_none() {
-                    break;
-                }
-                target = target.replace(dst.as_str(), v.unwrap());
+                target = target.replace(dst.as_str(), seg);
                 i += 1;
             }
         }
-        //println!("{:#?}", target);
         return target;
     }
 }
@@ -148,26 +141,29 @@ impl ItemManager {
         return Ok(it);
     }
     fn load(&mut self) {
-        self.check();
+        let _ = self.check();
     }
     // 检查目录，并初始化
     fn check(&mut self) -> io::Result<()> {
         let mut exists = false;
         let r = fs::read_dir(&self.conf_path);
-        if r.is_err() {
-            if r.unwrap_err().kind() == io::ErrorKind::NotFound {
-                fs::create_dir(&self.conf_path);
+        match r {
+            Err(ref err)if err.kind() == io::ErrorKind::NotFound => {
+                let _ = fs::create_dir(&self.conf_path);
             }
-        } else {
-            for entry in r? {
-                let path = entry?.path();
-                let file_path = path.to_str().unwrap();
-                if file_path.ends_with(".conf") {
-                    self.load_from(file_path);
-                    exists = true;
+            Ok(files) => {
+                for entry in files {
+                    let path = entry?.path();
+                    let file_path = path.to_str().unwrap();
+                    if file_path.ends_with(".conf") {
+                        self.load_from(file_path);
+                        exists = true;
+                    }
                 }
             }
+            _ => {}
         }
+
         // 未找到配置文件初始化一个示例
         if !exists {
             let mut map = HashMap::new();
@@ -182,13 +178,13 @@ impl ItemManager {
                 location: map,
             };
             let r = File::create(self.conf_path.to_owned() + "default.conf");
-            if r.is_err() {
-                return Err(r.unwrap_err());
+            if let Err(err) = r {
+                return Err(err);
             }
             println!("{}", self.conf_path.to_owned());
             let vec = vec!(it);
             self.append(&vec);
-            serde_json::to_writer_pretty(r.unwrap(), &vec);
+            let _ = serde_json::to_writer_pretty(r.unwrap(), &vec);
         }
         return Ok(());
     }
@@ -210,7 +206,7 @@ impl ItemManager {
             let host_arr: Vec<&str> = it.host.split(" ").collect();
             for host in host_arr {
                 if self.items.contains_key(host) {
-                    println!("[ Jrd][ Panic]: host {} already exists", host);
+                    println!("[ Jsa][ Panic]: host {} already exists", host);
                     exit(1);
                 }
                 self.items.insert(host.to_owned(), it.clone());
