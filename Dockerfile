@@ -20,7 +20,7 @@ COPY --from=builder \
     /home/rust/src/target/x86_64-unknown-linux-musl/release/jsa \
     /usr/bin/jsa
 
-VOLUME ["/jsa"]
+VOLUME ["/conf"]
 EXPOSE 8302
 ENTRYPOINT jsa -c /conf
 
