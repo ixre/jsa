@@ -9,7 +9,7 @@ use jsa::http::Entry;
 fn main() {
     let args = [
         Arg::with_name("conf").short("c")
-            .takes_value(true).default_value("./"),
+            .takes_value(true).default_value("./conf"),
         Arg::with_name("port").short("p")
             .takes_value(true).default_value("8302"),
         Arg::with_name("debug").short("d")
