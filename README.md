@@ -14,7 +14,7 @@ host项支持通配，如: *.a.com 能匹配 a.com 所有子域名; 如host包�
 
 ## 启动 ##
 ```
-./jsa
+./jsa -conf conf
 ```
 第一次运行会生成一个默认的配置示例：
 ```
@@ -35,7 +35,7 @@ host项支持通配，如: *.a.com 能匹配 a.com 所有子域名; 如host包�
 
 ## Docker镜像
 ```bash
-docker run -d --name jsa --volume /var/jsa:/jsa -p 8302:8302 --restart always jarry6/jsa
+docker run -d --name jsa --volume /usr/jsa:/conf -p 8302:8302 --restart always jarry6/jsa
 ```
 
 ##  高级应用 ##

@@ -175,7 +175,6 @@ impl ItemManager {
             if let Err(err) = r {
                 return Err(err);
             }
-            println!("{}", self.conf_path.to_owned());
             let vec = vec!(it);
             self.append(&vec);
             let _ = serde_json::to_writer_pretty(r.unwrap(), &vec);
