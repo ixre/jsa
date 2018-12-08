@@ -3,11 +3,11 @@
 # Author : jarrysix(jarrysix@gmail.com)
 # Date : 2018-10-21 22:39
 
-FROM ekidd/rust-musl-builder AS builder
+FROM ekidd/rust-musl-builder:latest AS builder
 # Add our source code.
 ADD . ./
 # Fix permissions on source code and Build our application.
-RUN sudo chown -R rust:rust ../ && cargo build --release
+RUN sudo chown -R rust:rust ../ && cargo build --release --target x86_64-unknown-linux-musl
 
 FROM alpine:latest
 MAINTAINER jarrysix
