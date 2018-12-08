@@ -1,6 +1,3 @@
-extern crate serde;
-extern crate serde_json;
-
 use std::collections::HashMap;
 use std::fs;
 use std::fs::File;
@@ -52,14 +49,27 @@ impl Item {
         if user_agent.eq("") {
             return target;
         }
-        let os = ["Mac", "Windows", "Linux"].iter().find_map(|os| {
-            if user_agent.contains(os) { Some(os.to_lowercase()) } else { None }
-        }).unwrap_or(String::from("unknown"));
+        let os = ["Mac", "Windows", "Linux"]
+            .iter()
+            .find_map(|os| {
+                if user_agent.contains(os) {
+                    Some(os.to_lowercase())
+                } else {
+                    None
+                }
+            })
+            .unwrap_or(String::from("unknown"));
         return target.replace("{os}", os.as_str());
     }
 
     // 获取目标地址
-    pub fn get_location<'a>(&self, path: &'a str, query: &'a str, segments: Vec<&str>, user_agent: &'a str) -> String {
+    pub fn get_location<'a>(
+        &self,
+        path: &'a str,
+        query: &'a str,
+        segments: Vec<&str>,
+        user_agent: &'a str,
+    ) -> String {
         let tuple = self.get_target(&path);
         let mut target = tuple.0.to_string();
         let pos = tuple.1;
@@ -78,8 +88,10 @@ impl Item {
         }
         // 加上时间戳请求 {timestamp}会返回时间戳
         if target.contains("{timestamp}") {
-            let unix = time::SystemTime::now().duration_since(time::UNIX_EPOCH)
-                .unwrap().as_secs();
+            let unix = time::SystemTime::now()
+                .duration_since(time::UNIX_EPOCH)
+                .unwrap()
+                .as_secs();
             let mut unix = unix.to_string();
             if !qt || concat == "" {
                 unix = "?_stamp=".to_owned() + &unix;
@@ -111,7 +123,6 @@ impl Item {
     }
 }
 
-
 // 项目管理器
 #[derive(Debug)]
 pub struct ItemManager {
@@ -142,7 +153,7 @@ impl ItemManager {
         let mut exists = false;
         let r = fs::read_dir(&self.conf_path);
         match r {
-            Err(ref err)if err.kind() == io::ErrorKind::NotFound => {
+            Err(ref err) if err.kind() == io::ErrorKind::NotFound => {
                 let _ = fs::create_dir(&self.conf_path);
             }
             Ok(files) => {
@@ -163,8 +174,14 @@ impl ItemManager {
             let mut map = HashMap::new();
             map.insert("/a".to_owned(), "http://a.com/a{timestamp}".to_owned());
             map.insert("/a/*".to_owned(), "http://a.com/t-{*}".to_owned());
-            map.insert("/a/b".to_owned(), "http://a.com/{path}{query}{timestamp}".to_owned());
-            map.insert("/a/b/c".to_owned(), "http://a.com/{#0}-{#1}-{#2}".to_owned());
+            map.insert(
+                "/a/b".to_owned(),
+                "http://a.com/{path}{query}{timestamp}".to_owned(),
+            );
+            map.insert(
+                "/a/b/c".to_owned(),
+                "http://a.com/{#0}-{#1}-{#2}".to_owned(),
+            );
             map.insert("/a/get-os".to_owned(), "http://a.com/?os={os}".to_owned());
             let it = Item {
                 host: "localhost *.a.com".to_owned(),
@@ -175,7 +192,7 @@ impl ItemManager {
             if let Err(err) = r {
                 return Err(err);
             }
-            let vec = vec!(it);
+            let vec = vec![it];
             self.append(&vec);
             let _ = serde_json::to_writer_pretty(r.unwrap(), &vec);
         }

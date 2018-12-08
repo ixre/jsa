@@ -1,11 +1,9 @@
-extern crate iron;
-
-use crate::jsa:: ItemManager;
-use self::iron::headers;
-use self::iron::IronResult;
-use self::iron::Request;
-use self::iron::Response;
-use self::iron::status;
+use crate::jsa::ItemManager;
+use iron::headers;
+use iron::status;
+use iron::IronResult;
+use iron::Request;
+use iron::Response;
 use std::str;
 
 const GLOB_DEBUG: bool = false;
@@ -41,7 +39,8 @@ impl iron::Handler for Entry {
         let mut path = segments.join("/");
         path.insert(0, '/');
         let path = path.as_str();
-        if path == "/favicon.ico" { // 不处理favicon.ico请求
+        if path == "/favicon.ico" {
+            // 不处理favicon.ico请求
             return Ok(Response::with(status::NotFound));
         }
         let host = r.url.host().to_string();
@@ -67,6 +66,3 @@ impl iron::Handler for Entry {
         return Ok(Response::with((status::Ok, "Not match any host")));
     }
 }
-
-
-
