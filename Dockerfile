@@ -18,10 +18,9 @@ LABEL Vendor="github.com/jsix"
 LABEL License="GPLv2"
 LABEL Version=1.0.0
 
-WORKDIR /usr/bin
-COPY --from=builder \
-    /home/rust/src/target/x86_64-unknown-linux-musl/release/jsa \
-    /usr/bin/jsa
+WORKDIR /jsa
+COPY --from=builder /home/rust/src/target/x86_64-unknown-linux-musl/release/jsa .
+COPY ./static ./static
 
 VOLUME ["/conf"]
 EXPOSE 8302
