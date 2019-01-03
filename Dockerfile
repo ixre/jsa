@@ -8,7 +8,7 @@ FROM ekidd/rust-musl-builder:latest AS builder
 ADD . ./
 # Fix permissions on source code and Build our application.
 RUN sudo chown -R rust:rust ../ && \
- rustup default nightly &&\
+ rustup default nightly && rustup target add x86_64-unknown-linux-musl &&\
  rustup update &&\
  cargo build --release --target x86_64-unknown-linux-musl
 
