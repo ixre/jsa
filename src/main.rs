@@ -11,18 +11,20 @@ use rocket::config::Environment;
 use rocket::http::ContentType;
 use rocket::Request;
 use rocket::Rocket;
+use rocket::logger::LoggingLevel;
 
 use jsa::http::entry;
 use rocket_contrib::serve::StaticFiles;
 use jsa::http::console;
 
 fn rocket(address: &str, port: u16) -> rocket::Rocket {
-    let cfg = Config::build(Environment::Production)
+    let mut cfg = Config::build(Environment::Production)
         .address(address)
         .port(port)
         .secret_key("JFANSeDrbcxXueohPvvcEal0+Fh6bwtQ++6v1wAQDm8=")
         .finalize()
         .unwrap();
+    cfg.set_log_level(LoggingLevel::Off);
     rocket::custom(cfg)
         .mount("/", routes![entry::index,
             entry::all_request,
@@ -50,6 +52,6 @@ fn main() {
     let port: u16 = _port.trim().parse().unwrap();
     let addr: String = "0.0.0.0:".to_string() + _port;
     jsa::init(conf, debug);
-    rocket("0.0.0.0", port).launch();
     println!("[ Jsa][ Serve]: serve on port {}", _port);
+    rocket("0.0.0.0", port).launch();
 }
