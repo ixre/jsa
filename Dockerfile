@@ -24,7 +24,7 @@ COPY ./static ./static
 
 VOLUME ["/conf"]
 EXPOSE 8302
-ENTRYPOINT jsa -c /conf
+ENTRYPOINT ./jsa -c /conf
 
 
 
