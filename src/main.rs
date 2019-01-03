@@ -6,22 +6,29 @@ extern crate rocket;
 use std::path::PathBuf;
 
 use clap::{App, Arg};
-use iron::prelude::Iron;
-use jsa::http::entry;
-use jsa::http2::Entry;
+use rocket::Config;
 use rocket::config::Environment;
 use rocket::http::ContentType;
-use rocket::Config;
 use rocket::Request;
 use rocket::Rocket;
+
+use jsa::http::entry;
+use rocket_contrib::serve::StaticFiles;
+use jsa::http::console;
 
 fn rocket(address: &str, port: u16) -> rocket::Rocket {
     let cfg = Config::build(Environment::Production)
         .address(address)
         .port(port)
+        .secret_key("JFANSeDrbcxXueohPvvcEal0+Fh6bwtQ++6v1wAQDm8=")
         .finalize()
         .unwrap();
-    rocket::custom(cfg).mount("/", routes![entry::index, entry::all_request])
+    rocket::custom(cfg)
+        .mount("/", routes![entry::index,
+            entry::all_request,
+            entry::favicon])
+        .mount("/static", StaticFiles::from("/static"))
+        .mount("/console",routes![console::login,console::index2])
 }
 
 fn main() {
@@ -42,8 +49,6 @@ fn main() {
     let _port = matches.value_of("port").unwrap();
     let port: u16 = _port.trim().parse().unwrap();
     let addr: String = "0.0.0.0:".to_string() + _port;
-    //let entry = Entry::new(conf.to_string(), debug);
-    //let _server = Iron::new(entry).http(addr).unwrap();
     jsa::init(conf, debug);
     rocket("0.0.0.0", port).launch();
     println!("[ Jsa][ Serve]: serve on port {}", _port);

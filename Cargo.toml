@@ -8,8 +8,8 @@ license = "Apache-2.0"
 
 [dependencies]
 clap = "~2.32"
-iron = "~0.6"
 rocket ="~0.4.0"
+rocket_contrib = "*"
 serde = "~1.0"
 serde_json = "~1.0"
 serde_derive = "~1.0"

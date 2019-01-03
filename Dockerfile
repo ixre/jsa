@@ -7,7 +7,10 @@ FROM ekidd/rust-musl-builder:latest AS builder
 # Add our source code.
 ADD . ./
 # Fix permissions on source code and Build our application.
-RUN sudo chown -R rust:rust ../ && cargo build --release --target x86_64-unknown-linux-musl
+RUN sudo chown -R rust:rust ../ && \
+ rustup default nightly &&\
+ rustup update &&\
+ cargo build --release --target x86_64-unknown-linux-musl
 
 FROM alpine:latest
 MAINTAINER jarrysix

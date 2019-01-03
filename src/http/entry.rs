@@ -2,23 +2,32 @@ use std::io::Cursor;
 use std::path::PathBuf;
 
 use rocket::response;
-use rocket::response::Content;
+use rocket::Response;
+use rocket::response::NamedFile;
 use rocket::response::Redirect;
 use rocket::response::Responder;
-use rocket::Response;
 
 use crate::http::Context;
 use crate::MANAGER;
 use crate::VERSION;
 
-#[get("/index")]
-pub fn index() -> &'static str {
-    "hello"
+#[get("/")]
+pub fn index<'a>(ctx: Context) -> response::Result<'a> {
+    all_request(PathBuf::new(), ctx)
 }
 
-#[get("/<all..>")]
-pub fn all_request<'a>(all: PathBuf, ctx: Context) -> response::Result<'a> {
-    let host = ctx.header("Host");
+#[get("/favicon.ico")]
+pub fn favicon() -> Option<NamedFile> {
+    NamedFile::open("./static/favicon.ico").ok()
+}
+
+#[get("/<_all..>")]
+pub fn all_request<'a>(_all: PathBuf, ctx: Context) -> response::Result<'a> {
+    let mut host = ctx.header("Host");
+    if host != "" {
+        let vec: Vec<&str> = host.split(":").collect();
+        host = String::from(*vec.get(0).unwrap());
+    }
     let path = ctx.req.uri().path();
     // get segments
     let mut segments: Vec<&str> = path.split('/').collect();
@@ -45,24 +54,15 @@ pub fn all_request<'a>(all: PathBuf, ctx: Context) -> response::Result<'a> {
     let mut rsp = String::from("<html><body><center><h1>Not match any host</h1>");
     rsp.push_str("<hr /> JSA ");
     rsp.push_str(VERSION);
-    rsp.push_str("</center><script src=\"http://s.to2.net/jsa_404\" ");
-    rsp.push_str("type=\"text/javascript\"></script>");
+    rsp.push_str("</center><script src=\"http://s.to2.net/jsa_404?host=");
+    rsp.push_str(&host);
+    rsp.push_str("&amp;path=");
+    rsp.push_str(&path);
+    rsp.push_str("\" type=\"text/javascript\"></script>");
     rsp.push_str("</body></html>");
     return Response::build()
         .raw_header("Content-Type", "text/html")
+        .raw_status(404, "Not Found")
         .sized_body(Cursor::new(rsp))
         .ok();
-}
-
-#[get("/admin/login")]
-pub fn login() -> &'static str {
-    "admin page"
-}
-
-#[get("/")]
-pub fn index2() -> &'static str {
-    //let mut s = "Hello, world!".to_string();
-    //s.push_str(req.headers().get_one("Host").unwrap());
-    //s.as_str();
-    "hello world"
 }

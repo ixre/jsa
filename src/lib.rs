@@ -5,10 +5,10 @@
 extern crate rocket;
 #[macro_use]
 extern crate serde_derive;
+
 use crate::jsa::ItemManager;
 
 pub mod http;
-pub mod http2;
 mod jsa;
 
 const VERSION: &str = "1.0";

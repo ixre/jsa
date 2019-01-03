@@ -161,7 +161,7 @@ impl ItemManager {
                     let path = entry?.path();
                     let file_path = path.to_str().unwrap();
                     if file_path.ends_with(".conf") {
-                        self.load_from(file_path);
+                        let _ = self.load_from(file_path);
                         exists = true;
                     }
                 }
