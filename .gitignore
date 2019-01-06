@@ -3,3 +3,8 @@ dist
 Cargo.lock
 target/
 **/*.rs.bk
+node_modules
+*.lock
+.cache
+*.log
+*.map

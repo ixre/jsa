@@ -26,11 +26,11 @@ fn rocket(address: &str, port: u16) -> rocket::Rocket {
         .unwrap();
     cfg.set_log_level(LoggingLevel::Off);
     rocket::custom(cfg)
-        .mount("/", routes![entry::index,
-            entry::all_request,
-            entry::favicon])
-        .mount("/static", StaticFiles::from("/static"))
-        .mount("/console",routes![console::login,console::index2])
+        .mount("/", routes![entry::index, entry::all_request, entry::favicon])
+        .mount("/static", StaticFiles::from("./static"))
+        .mount("/console",routes![console::index,console::login,console::index2])
+        .mount("/console/app",StaticFiles::from("./static/app"))
+
 }
 
 fn main() {

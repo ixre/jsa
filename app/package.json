@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "parcel-bundler": "^1.11.0",
+    "react": "^16.7.0"
+  },
+  "homepage": ".",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "./build.sh"
+  },
+  "dependencies": {
+    "react-dom": "^16.7.0"
+  }
+}

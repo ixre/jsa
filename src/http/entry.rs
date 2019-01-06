@@ -48,7 +48,7 @@ pub fn all_request<'a>(_all: PathBuf, ctx: Context) -> response::Result<'a> {
         let user_agent = ctx.header("User-Agent");
         let location = item.get_location(path, query, segments, &user_agent);
         if location.len() > 0 {
-            return Redirect::to(location).respond_to(ctx.req);
+            return Redirect::temporary(location).respond_to(ctx.req);
         }
     }
     let mut rsp = String::from("<html><body><center><h1>Not match any host</h1>");
