@@ -9,13 +9,12 @@ use clap::{App, Arg};
 use rocket::Config;
 use rocket::config::Environment;
 use rocket::http::ContentType;
+use rocket::logger::LoggingLevel;
 use rocket::Request;
 use rocket::Rocket;
-use rocket::logger::LoggingLevel;
-
-use jsa::http::entry;
 use rocket_contrib::serve::StaticFiles;
-use jsa::http::console;
+
+use jsa::http::index;
 
 fn rocket(address: &str, port: u16) -> rocket::Rocket {
     let mut cfg = Config::build(Environment::Production)
@@ -26,11 +25,16 @@ fn rocket(address: &str, port: u16) -> rocket::Rocket {
         .unwrap();
     cfg.set_log_level(LoggingLevel::Off);
     rocket::custom(cfg)
-        .mount("/", routes![entry::index, entry::all_request, entry::favicon])
+        .mount(
+            "/",
+            routes![index::index,
+            index::all,
+             index::favicon,
+              index::login],
+        )
         .mount("/static", StaticFiles::from("./static"))
-        .mount("/console",routes![console::index,console::login,console::index2])
-        .mount("/console/app",StaticFiles::from("./static/app"))
-
+        //.mount("/login",routes![console::index,console::login,console::index2])
+        .mount("/console", StaticFiles::from("./static/app"))
 }
 
 fn main() {

@@ -1,28 +1,14 @@
-use std::io::Cursor;
-use std::path::PathBuf;
-
-use rocket::response;
-use rocket::Response;
-use rocket::response::NamedFile;
-use rocket::response::Redirect;
-use rocket::response::Responder;
-
 use crate::http::Context;
 use crate::MANAGER;
 use crate::VERSION;
+use rocket::response;
+use rocket::response::Redirect;
+use rocket::response::Responder;
+use rocket::Response;
+use std::io::Cursor;
 
-#[get("/")]
-pub fn index<'a>(ctx: Context) -> response::Result<'a> {
-    all_request(PathBuf::new(), ctx)
-}
-
-#[get("/favicon.ico")]
-pub fn favicon() -> Option<NamedFile> {
-    NamedFile::open("./static/favicon.ico").ok()
-}
-
-#[get("/<_all..>")]
-pub fn all_request<'a>(_all: PathBuf, ctx: Context) -> response::Result<'a> {
+///! Handle redirect request.
+pub fn all_request<'a>(ctx: Context) -> response::Result<'a> {
     let mut host = ctx.header("Host");
     if host != "" {
         let vec: Vec<&str> = host.split(":").collect();

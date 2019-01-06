@@ -1,14 +1,8 @@
 use rocket::response::Redirect;
 
 #[get("/")]
-pub fn index()->Redirect{
-    println!("hello");
-    Redirect::temporary("/console/app/")
-}
-
-#[get("/login")]
-pub fn login() -> &'static str {
-    "admin page"
+pub fn index() -> Redirect {
+    Redirect::temporary("/console/")
 }
 
 #[get("/index2")]
@@ -18,4 +12,3 @@ pub fn index2() -> &'static str {
     //s.as_str();
     "hello world"
 }
-

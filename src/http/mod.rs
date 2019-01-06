@@ -1,12 +1,13 @@
-
 use rocket::request;
-use rocket::Request;
 use rocket::request::FromRequest;
 use rocket::Outcome;
+use rocket::Request;
 
+pub use self::jsa_request::all_request;
 
-pub mod console;
-pub mod entry;
+//pub mod console;
+pub mod index;
+mod jsa_request;
 
 pub struct Context<'a, 'r> {
     req: &'a Request<'r>,
