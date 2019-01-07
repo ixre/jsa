@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
 NODE_ENV=production
-parcel build --public-url ./ index.html
+rm -rf ./dist && rm -rf ../static/app
+parcel build --no-cache --public-url ./ index.html
 cp -r dist ../static/app

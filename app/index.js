@@ -1,8 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
+import "./src/css/page.less";
 const Loading = props => <div>{props.text}</div>;
-
 class App extends React.Component {
     constructor(props) {
         super(props);
