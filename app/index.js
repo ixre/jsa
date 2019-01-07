@@ -1,12 +1,25 @@
-import React, {Component} from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 
 const Loading = props => <div>{props.text}</div>;
-class App extends Component {
+
+class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {child: <Loading text={"click load"}/>};
+        this.state = {
+            child: <Loading text={"click load"}/>,
+            routes:<div></div>
+        };
     }
+
+    componentDidMount() {
+        import("./src/routes").then(({IndexRouters}) => {
+            this.setState({
+                routes: <IndexRouters/>
+            });
+        });
+    }
+
     //动态导入
     dynImport() {
         import("./src/load").then(({LazyLoad}) => {
@@ -18,11 +31,15 @@ class App extends Component {
 
     render() {
         return (
-            <div onClick={this.dynImport.bind(this)}>
-                <button>click me</button>
-                {this.state.child}
+            <div>
+                <div onClick={this.dynImport.bind(this)}>
+                    <button>click me</button>
+                    {this.state.child}
+                </div>
+                {this.state.routes}
             </div>
         );
     }
 }
+
 ReactDOM.render(<App/>, document.getElementById("root"));
