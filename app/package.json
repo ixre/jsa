@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "antd": "^3.12.1",
+    "features": "^0.1.0",
     "react-dom": "^16.7.0",
     "react-router-dom": "^4.3.1"
   }

@@ -3,7 +3,7 @@ import {HashRouter as Router, Route, Switch} from "react-router-dom";
 import Login from "../login/login";
 
 
-export default class Main extends React.Component {
+export class Index extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
@@ -14,12 +14,12 @@ export default class Main extends React.Component {
 }
 
 
-export class IndexRouters extends React.Component {
+export default class IndexRouters extends React.Component {
     render() {
         return (
             <Router>
                 <Switch>
-                    <Route exact path='/' component={Main}/>
+                    <Route exact path='/' component={Index}/>
                     <Route path='/login' component={Login}/>
                 </Switch>
             </Router>
