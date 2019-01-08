@@ -1,6 +1,9 @@
 import React from "react";
+import { Route, Switch} from "react-router-dom";
+import Login from "./features/login/login";
+import Index from "./features/home";
 
-const IndexRoutes = React.lazy(() => import("./features/home"));
+const profile = React.lazy(()=>import("./features/profile"));
 
 export default class App extends React.Component {
     constructor(props) {
@@ -11,7 +14,11 @@ export default class App extends React.Component {
         return (
             <React.Suspense fallback={<div>Loading...</div>}>
                 <div className="app-container">
-                    <IndexRoutes/>
+                        <Switch>
+                            <Route exact path='/' component={Index}/>
+                            <Route path='/profile/edit' component={profile.EditProfile}/>
+                            <Route path='/login' component={Login}/>
+                        </Switch>
                 </div>
             </React.Suspense>
         );
