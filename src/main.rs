@@ -34,7 +34,7 @@ fn rocket(address: &str, port: u16) -> rocket::Rocket {
         )
         .mount("/static", StaticFiles::from("./static"))
         //.mount("/login",routes![console::index,console::login,console::index2])
-        .mount("/console", StaticFiles::from("./static/app"))
+        .mount("/console", StaticFiles::from("./app"))
 }
 
 fn main() {
