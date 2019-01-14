@@ -2,6 +2,7 @@
 #![allow(unused)]
 #[macro_use]
 extern crate rocket;
+#[macro_use] extern crate rocket_contrib;
 
 use std::path::PathBuf;
 
@@ -15,6 +16,7 @@ use rocket::Rocket;
 use rocket_contrib::serve::StaticFiles;
 
 use jsa::http::index;
+use jsa::http::console;
 
 fn rocket(address: &str, port: u16) -> rocket::Rocket {
     let mut cfg = Config::build(Environment::Production)
@@ -33,7 +35,7 @@ fn rocket(address: &str, port: u16) -> rocket::Rocket {
               index::login],
         )
         .mount("/static", StaticFiles::from("./static"))
-        //.mount("/login",routes![console::index,console::login,console::index2])
+        .mount("/console/api",routes![console::login])
         .mount("/console", StaticFiles::from("./app"))
 }
 
