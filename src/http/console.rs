@@ -1,6 +1,6 @@
+use crate::http::WrappedResult;
 use rocket::response::Redirect;
 use rocket_contrib::json::JsonValue;
-use crate::http::WrappedResult;
 use serde_json::Map;
 
 #[get("/")]
@@ -16,12 +16,12 @@ pub fn index2() -> &'static str {
     "hello world"
 }
 
-#[post("/user/logi2n")]
+#[get("/login")]
 pub fn login2() -> JsonValue {
     json!({"hello":"123"})
 }
 #[post("/user/login")]
-pub fn login() ->WrappedResult {
+pub fn login() -> WrappedResult {
     let mut map = Map::new();
     map.insert("CookieName".to_string(), "user".into());
     map.insert("CookieValue".to_string(), "123".into());

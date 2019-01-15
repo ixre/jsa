@@ -1,17 +1,17 @@
-
-use rocket::Outcome;
 use rocket::request;
-use rocket::Request;
 use rocket::request::FromRequest;
 use rocket::response;
 use rocket::response::content;
 use rocket::response::Responder;
+use rocket::Outcome;
+use rocket::Request;
 
 pub use self::jsa_request::all_request;
-
+pub use self::route::mount_routes;
 pub mod console;
 pub mod index;
 mod jsa_request;
+mod route;
 
 pub struct Context<'a, 'r> {
     req: &'a Request<'r>,
@@ -38,8 +38,16 @@ pub struct WrappedResult<T = serde_json::Value> {
 }
 
 impl<'a> WrappedResult {
-    pub fn new<M:Into<String>,D:Into<serde_json::Value>>(err_code: i8, err_msg: M, data:D) -> Self {
-        WrappedResult { code: err_code, err_msg:err_msg.into(), data:data.into() }
+    pub fn new<M: Into<String>, D: Into<serde_json::Value>>(
+        err_code: i8,
+        err_msg: M,
+        data: D,
+    ) -> Self {
+        WrappedResult {
+            code: err_code,
+            err_msg: err_msg.into(),
+            data: data.into(),
+        }
     }
 }
 
@@ -53,4 +61,3 @@ impl<'r> Responder<'r> for WrappedResult {
         content::Json(r).respond_to(req)
     }
 }
-

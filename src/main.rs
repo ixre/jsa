@@ -2,21 +2,19 @@
 #![allow(unused)]
 #[macro_use]
 extern crate rocket;
-#[macro_use] extern crate rocket_contrib;
+#[macro_use]
+extern crate rocket_contrib;
 
 use std::path::PathBuf;
 
 use clap::{App, Arg};
-use rocket::Config;
+use jsa::http;
 use rocket::config::Environment;
 use rocket::http::ContentType;
 use rocket::logger::LoggingLevel;
+use rocket::Config;
 use rocket::Request;
 use rocket::Rocket;
-use rocket_contrib::serve::StaticFiles;
-
-use jsa::http::index;
-use jsa::http::console;
 
 fn rocket(address: &str, port: u16) -> rocket::Rocket {
     let mut cfg = Config::build(Environment::Production)
@@ -26,17 +24,8 @@ fn rocket(address: &str, port: u16) -> rocket::Rocket {
         .finalize()
         .unwrap();
     cfg.set_log_level(LoggingLevel::Off);
-    rocket::custom(cfg)
-        .mount(
-            "/",
-            routes![index::index,
-            index::all,
-             index::favicon,
-              index::login],
-        )
-        .mount("/static", StaticFiles::from("./static"))
-        .mount("/console/api",routes![console::login])
-        .mount("/console", StaticFiles::from("./app"))
+    let r = rocket::custom(cfg);
+    http::mount_routes(r)
 }
 
 fn main() {

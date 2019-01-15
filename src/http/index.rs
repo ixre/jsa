@@ -1,10 +1,12 @@
+use std::io::Cursor;
 use std::path::PathBuf;
+
+use rocket::response;
+use rocket::Response;
+use rocket::response::NamedFile;
 
 use crate::http::all_request;
 use crate::http::Context;
-use rocket::response;
-use rocket::response::NamedFile;
-use rocket::response::Redirect;
 
 #[get("/")]
 pub fn index<'a>(ctx: Context) -> response::Result<'a> {
@@ -21,7 +23,12 @@ pub fn all<'a>(_all: PathBuf, ctx: Context) -> response::Result<'a> {
     all_request(ctx)
 }
 
-#[get("/login")]
-pub fn login() -> Redirect {
-    Redirect::temporary("/console/")
+#[get("/board")]
+pub fn board<'a>() -> response::Result<'a> {
+    Response::build()
+        .raw_header("Content-Type", "text/html")
+        .raw_status(404, "Not Found")
+        .sized_body(Cursor::new("<script>location.assign(\
+                '/console/#/home')</script>"))
+        .ok()
 }
