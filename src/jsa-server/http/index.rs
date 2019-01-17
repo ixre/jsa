@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use rocket::response;
 use rocket::Response;
 use rocket::response::NamedFile;
-use crate::http::all_request;
-use crate::http::Context;
+use super::all_request;
+use super::Context;
 
 #[get("/")]
 pub fn index<'a>(ctx: Context) -> response::Result<'a> {

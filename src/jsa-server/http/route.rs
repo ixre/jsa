@@ -7,16 +7,13 @@ use rocket::response::Responder;
 use rocket::Rocket;
 use rocket_contrib::serve::StaticFiles;
 
-use crate::http::console;
-use crate::http::index;
-use crate::http::WrappedResult;
+use super::console;
+use super::index;
+use super::WrappedResult;
 
 pub fn mount_routes(r: Rocket) -> Rocket {
     let r = r
-        .mount(
-            "/",
-            routes![index::index, index::all, index::favicon, index::board],
-        )
+        .mount("/", routes![index::index, index::all, index::favicon, index::board])
         .mount("/static", StaticFiles::from("./static"))
         .mount("/console/api", routes![console::login, console::login2])
         .mount("/console", StaticFiles::from("./app"));

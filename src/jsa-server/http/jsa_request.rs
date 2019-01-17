@@ -1,11 +1,14 @@
-use crate::http::Context;
-use crate::MANAGER;
-use crate::VERSION;
+use std::io::Cursor;
+
 use rocket::response;
+use rocket::Response;
 use rocket::response::Redirect;
 use rocket::response::Responder;
-use rocket::Response;
-use std::io::Cursor;
+
+use crate::MANAGER;
+use crate::VERSION;
+
+use super::Context;
 
 ///! Handle redirect request.
 pub fn all_request<'a>(ctx: Context) -> response::Result<'a> {
