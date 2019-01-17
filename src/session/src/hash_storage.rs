@@ -4,6 +4,7 @@ use std::hash::Hash;
 use std::sync::{Arc, RwLock};
 
 use super::Key;
+use super::SessionPair;
 use super::SessionStore;
 
 type Store<K, V> = RwLock<HashMap<K, RwLock<V>>>;
@@ -35,6 +36,7 @@ impl<K: Key> HashSessionStore<K> where K: Eq + Hash {
         }
     }
 }
+
 
 /* A note on clones:
  *

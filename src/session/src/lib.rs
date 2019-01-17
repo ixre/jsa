@@ -1,8 +1,16 @@
 extern crate typemap;
-pub use typemap::Key;
+
+use core::hash::Hash;
+use std::collections::HashMap;
 use std::sync::Arc;
 
-mod hash_session;
+pub use hash_storage::HashSessionStore;
+pub use typemap::Key;
+
+mod hash_storage;
+mod session;
+mod tests;
+
 
 /// This `Trait` defines a session storage struct. It must be implemented on any store passed to `Sessions`.
 /// The `K` should be session key.
@@ -22,11 +30,10 @@ pub trait SessionStore<K: Key>: Sync {
 }
 
 
-
 /// A session which provides basic CRUD operations.
 pub struct Session<K: Key> {
     key: K,
-    store: Arc<Box<SessionStore<K> + 'static + Send + Sync>>
+    store: Arc<Box<SessionStore<K> + 'static + Send + Sync>>,
 }
 
 impl<K: Key> Session<K> {
@@ -34,7 +41,7 @@ impl<K: Key> Session<K> {
     pub fn new(key: K, store: Box<SessionStore<K> + 'static + Send + Sync>) -> Session<K> {
         Session {
             key: key,
-            store: Arc::new(store)
+            store: Arc::new(store),
         }
     }
     /// Set the value of this session, replacing any previously set value.
@@ -59,4 +66,38 @@ impl<K: Key> Session<K> {
     pub fn remove(&self) -> bool {
         self.store.remove(&self.key)
     }
+}
+
+#[derive(PartialEq, Eq, Hash, Clone, Debug)]
+pub struct SessionPair(String);
+
+
+impl From<String> for SessionPair {
+    fn from(s: String) -> Self {
+        SessionPair(s)
+    }
+}
+
+
+impl From<&str> for SessionPair{
+    fn from(s: &str) -> Self {
+        SessionPair(s.into())
+    }
+}
+
+
+/// Impl Key for some types
+impl typemap::Key for SessionPair {
+    type Value = HashMap<String, String>;
+}
+
+pub fn hash_session() -> HashSessionStore<SessionPair> {
+    let s: HashSessionStore<SessionPair> = HashSessionStore::new();
+    s
+}
+
+
+pub fn hash_session_type<T: Key + Eq + Hash>() -> HashSessionStore<T> {
+    let s: HashSessionStore<T> = HashSessionStore::new();
+    s
 }
