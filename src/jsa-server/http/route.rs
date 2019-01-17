@@ -35,13 +35,11 @@ fn attach_user_middleware(r: Rocket) -> Rocket {
         let is_login_ok = check_login(req);
         // Set CORS header for api request if user is logged.
         if login_req || (api_req && is_login_ok) {
-            let mut origin = String::from("*");
             if let Some(o) = req.headers().get_one("Origin") {
-                origin = String::from(o);
+                rsp.set_header(Header::new("Access-Control-Allow-Origin", String::from(o)));
+                rsp.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+                rsp.set_header(Header::new("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"));
             }
-            rsp.set_header(Header::new("Access-Control-Allow-Origin", origin));
-            rsp.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
-            rsp.set_header(Header::new("Access-Control-Allow-Headers", "Content-Type,X-Requested-With"));
         }
         // If login ok or send a login request
         if is_login_ok || login_req { return; }
@@ -63,5 +61,9 @@ fn attach_user_middleware(r: Rocket) -> Rocket {
 }
 
 fn check_login(req: &Request) -> bool {
-    !true
+    if let Some(i) = req.cookies().get("SessionID")
+        .map(|cookie| cookie.value()) {
+        return true;
+    }
+    false
 }

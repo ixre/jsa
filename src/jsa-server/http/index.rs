@@ -1,10 +1,8 @@
 use std::io::Cursor;
 use std::path::PathBuf;
-
 use rocket::response;
 use rocket::Response;
 use rocket::response::NamedFile;
-
 use crate::http::all_request;
 use crate::http::Context;
 
