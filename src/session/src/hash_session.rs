@@ -3,8 +3,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 use std::sync::{Arc, RwLock};
 
-use typemap;
-
+use super::Key;
 use super::SessionStore;
 
 type Store<K, V> = RwLock<HashMap<K, RwLock<V>>>;
@@ -16,11 +15,11 @@ type Store<K, V> = RwLock<HashMap<K, RwLock<V>>>;
 /// #### To use:
 /// ```ignore
 /// ```
-pub struct HashSessionStore<K: typemap::Key> {
+pub struct HashSessionStore<K: Key> {
     store: Arc<Store<K, K::Value>>
 }
 
-impl<K: typemap::Key> Clone for HashSessionStore<K> {
+impl<K: Key> Clone for HashSessionStore<K> {
     fn clone(&self) -> HashSessionStore<K> {
         HashSessionStore {
             store: self.store.clone()
@@ -28,7 +27,7 @@ impl<K: typemap::Key> Clone for HashSessionStore<K> {
     }
 }
 
-impl<K: typemap::Key> HashSessionStore<K> where K: Eq + Hash {
+impl<K: Key> HashSessionStore<K> where K: Eq + Hash {
     /// Create a new instance of the session store
     pub fn new() -> HashSessionStore<K> {
         HashSessionStore {
@@ -45,7 +44,7 @@ impl<K: typemap::Key> HashSessionStore<K> where K: Eq + Hash {
  *
  * Instead, all values returned are copies.
  */
-impl<K: typemap::Key> SessionStore<K> for HashSessionStore<K> where K: Send + Sync + Eq + Hash + Clone, K::Value: Send + Sync + Clone {
+impl<K: Key> SessionStore<K> for HashSessionStore<K> where K: Send + Sync + Eq + Hash + Clone, K::Value: Send + Sync + Clone {
     fn insert(&self, key: &K, value: K::Value) {
         // Avoid a WriteLock if possible
         if !self.store.read().unwrap().contains_key(key) {
