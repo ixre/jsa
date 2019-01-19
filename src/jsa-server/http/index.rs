@@ -1,10 +1,10 @@
-use std::io::Cursor;
-use std::path::PathBuf;
-use rocket::response;
-use rocket::Response;
-use rocket::response::NamedFile;
 use super::all_request;
 use super::Context;
+use rocket::response;
+use rocket::response::NamedFile;
+use rocket::Response;
+use std::io::Cursor;
+use std::path::PathBuf;
 
 #[get("/")]
 pub fn index<'a>(ctx: Context) -> response::Result<'a> {
@@ -26,7 +26,9 @@ pub fn board<'a>() -> response::Result<'a> {
     Response::build()
         .raw_header("Content-Type", "text/html")
         .raw_status(404, "Not Found")
-        .sized_body(Cursor::new("<script>location.assign(\
-                '/console/#/home')</script>"))
+        .sized_body(Cursor::new(
+            "<script>location.assign(\
+             '/console/#/home')</script>",
+        ))
         .ok()
 }

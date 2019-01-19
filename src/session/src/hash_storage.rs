@@ -62,20 +62,19 @@ impl<K: Key> SessionStore<K> for HashSessionStore<K> where K: Send + Sync + Eq +
     }
 
     fn set(&self, key: &K, value: K::Value) -> Option<K::Value> {
-        return match self.store.read().unwrap().get(key) {
+        match self.store.read().unwrap().get(key) {
             // Instead of using swap, which requires a write lock on the HashMap,
             // only take the write locks when the key does not yet exist
             Some(lock) => {
                 let old_v = lock.read().unwrap().clone();
                 *lock.write().unwrap() = value;
-                Some(old_v)
+                return Some(old_v);
             }
-            None => {
-                // Inserting consumes a key => clone()
-                self.store.write().unwrap().insert(key.clone(), RwLock::new(value));
-                None
-            }
-        };
+            _ => {}
+        }
+        // Inserting consumes a key => clone()
+        self.store.write().unwrap().insert(key.clone(), RwLock::new(value));
+        None
     }
     fn remove(&self, key: &K) -> bool {
         self.store.write().unwrap().remove(key).is_some()

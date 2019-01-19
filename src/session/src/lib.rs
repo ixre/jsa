@@ -14,6 +14,22 @@ mod tests;
 
 /// This `Trait` defines a session storage struct. It must be implemented on any store passed to `Sessions`.
 /// The `K` should be session key.
+///  let session_id = "1".into();
+/// ```
+///  // Create session storage
+///  let store = hash_session();
+///  // Insert new session
+///  let mut map = HashMap::new();
+///  map.insert("user_id".to_string(), "1".to_string());
+///  let mut map_mut = map.clone();
+///  store.set(&session_id, map);
+///  // Update existed session
+///  map_mut.insert("user_name".to_string(),"jarrysix".to_string());
+///  store.set(&session_id, map_mut);
+///  // Get session
+///  let map :HashMap<String,String> = store.get(&session_id).unwrap();
+///  println!("{:#?}",map);
+///```
 pub trait SessionStore<K: Key>: Sync {
     /// Set the value of the session belonging to `key`, replacing any previously set value.
     fn insert(&self, key: &K, value: K::Value);
@@ -79,7 +95,7 @@ impl From<String> for SessionPair {
 }
 
 
-impl From<&str> for SessionPair{
+impl From<&str> for SessionPair {
     fn from(s: &str) -> Self {
         SessionPair(s.into())
     }
