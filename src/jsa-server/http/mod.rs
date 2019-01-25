@@ -1,13 +1,19 @@
+use std::collections::HashMap;
+
+use rocket::Outcome;
 use rocket::request;
+use rocket::Request;
 use rocket::request::FromRequest;
 use rocket::response;
 use rocket::response::content;
 use rocket::response::Responder;
-use rocket::Outcome;
-use rocket::Request;
+use session::HashSessionStore;
+use session::SessionPair;
+use session::SessionStore;
 
 pub use self::jsa_request::all_request;
 pub use self::route::mount_routes;
+
 pub mod console;
 pub mod index;
 mod jsa_request;
@@ -30,6 +36,7 @@ impl<'a, 'r> FromRequest<'a, 'r> for Context<'a, 'r> {
     }
 }
 
+/// Provider a common result wrapper; If code equal zero,it means successfully.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct WrappedResult<T = serde_json::Value> {
     code: i8,
@@ -60,4 +67,17 @@ impl<'r> Responder<'r> for WrappedResult {
         });
         content::Json(r).respond_to(req)
     }
+}
+
+lazy_static!{
+    static ref SESSION_STORE: HashSessionStore<SessionPair> = session::hash_session();
+}
+
+
+pub fn get_session(key: &str) -> Option<HashMap<String, String>> {
+    return SESSION_STORE.get(&key.into());
+}
+
+pub fn flush_session(key: &str, map: HashMap<String, String>) {
+    SESSION_STORE.set(&key.into(), map);
 }
