@@ -21,6 +21,7 @@ LABEL Version=1.0.0
 WORKDIR /jsa
 COPY --from=builder /home/rust/src/target/x86_64-unknown-linux-musl/release/jsa .
 COPY ./static ./static
+COPY ./app ./app
 
 VOLUME ["/conf"]
 EXPOSE 8302
