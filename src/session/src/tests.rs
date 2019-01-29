@@ -6,6 +6,11 @@ use super::SessionPair;
 use super::SessionStore;
 
 #[test]
+fn test_generate_id(){
+    let s = super::generate_id();
+    println!("{}",s);
+}
+#[test]
 fn test_session() {
     // let hs: HashSessionStore<String> = HashSessionStore::new();
     let session_id = "1".into();

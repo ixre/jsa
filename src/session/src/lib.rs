@@ -1,4 +1,6 @@
+extern crate md5;
 extern crate typemap;
+extern crate uuid;
 
 use core::hash::Hash;
 use std::collections::HashMap;
@@ -6,11 +8,11 @@ use std::sync::Arc;
 
 pub use hash_storage::HashSessionStore;
 pub use typemap::Key;
+use uuid::Uuid;
 
 mod hash_storage;
 mod session;
 mod tests;
-
 
 /// This `Trait` defines a session storage struct. It must be implemented on any store passed to `Sessions`.
 /// The `K` should be session key.
@@ -45,6 +47,10 @@ pub trait SessionStore<K: Key>: Sync {
     fn remove(&self, key: &K) -> bool;
 }
 
+pub fn generate_id()->String{
+    let md5_str = md5::compute(Uuid::new_v4().to_hyphenated().to_string());
+    format!("{:x}",md5_str)
+}
 
 /// A session which provides basic CRUD operations.
 pub struct Session<K: Key> {
@@ -87,20 +93,17 @@ impl<K: Key> Session<K> {
 #[derive(PartialEq, Eq, Hash, Clone, Debug)]
 pub struct SessionPair(String);
 
-
 impl From<String> for SessionPair {
     fn from(s: String) -> Self {
         SessionPair(s)
     }
 }
 
-
 impl From<&str> for SessionPair {
     fn from(s: &str) -> Self {
         SessionPair(s.into())
     }
 }
-
 
 /// Impl Key for some types
 impl typemap::Key for SessionPair {
