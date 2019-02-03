@@ -18,7 +18,8 @@ pub fn mount_routes(r: Rocket) -> Rocket {
             routes![index::index, index::all, index::favicon, index::board],
         )
         .mount("/static", StaticFiles::from("./static"))
-        .mount("/console/api", routes![console::login, console::login2])
+        .mount("/console/api", routes![console::login,
+            console::initial])
         .mount("/console", StaticFiles::from("./app"));
     attach_user_middleware(r)
 }
@@ -68,7 +69,7 @@ fn attach_user_middleware(r: Rocket) -> Rocket {
 }
 
 fn check_login(req: &Request) -> bool {
-    if let Some(i) = req.cookies().get("SessionID").map(|cookie| cookie.value()) {
+    if let Some(_) = req.cookies().get("SessionID").map(|cookie| cookie.value()) {
         return true;
     }
     false
