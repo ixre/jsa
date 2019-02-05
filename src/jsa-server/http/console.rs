@@ -56,6 +56,18 @@ fn session_id(cookies: &Cookies) -> String {
     String::from("")
 }
 
+#[post("/check_session")]
+pub fn check_session(cookies: Cookies) -> JsonValue {
+    let sid = session_id(&cookies);
+    if sid.len() == 0 {
+        return json!({"code":1,"err_msg":"用户未登陆".to_string()});
+    }
+    if let Some(d) = super::get_session(&sid) {
+        return json!({"code":0,"SessionID":sid});
+    }
+    return json!({"code":2,"err_msg":"会话已过期".to_string()});
+}
+
 #[post("/initial")]
 pub fn initial(ctx: Context) -> JsonValue {
     let mut nick_name = String::from("");

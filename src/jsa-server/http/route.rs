@@ -2,8 +2,8 @@ use std::io::Cursor;
 
 use rocket::fairing::AdHoc;
 use rocket::http::Header;
-use rocket::response::Responder;
 use rocket::Request;
+use rocket::response::Responder;
 use rocket::Rocket;
 use rocket_contrib::serve::StaticFiles;
 
@@ -19,6 +19,7 @@ pub fn mount_routes(r: Rocket) -> Rocket {
         )
         .mount("/static", StaticFiles::from("./static"))
         .mount("/console/api", routes![console::login,
+            console::check_session,
             console::initial])
         .mount("/console", StaticFiles::from("./app"));
     attach_user_middleware(r)
@@ -50,19 +51,12 @@ fn attach_user_middleware(r: Rocket) -> Rocket {
             return;
         }
         // Redirect to login page if request path '/board' or api request!
-        if path == "/board" || api_req {
-            if method == "GET" {
-                rsp.set_sized_body(Cursor::new(
-                    "<script>location.assign(\
-                     '/console/#/login?callback=')</script>",
-                ));
-            } else {
-                rsp.merge(
-                    WrappedResult::new(-100, "access denied", "")
-                        .respond_to(req)
-                        .unwrap(),
-                );
-            }
+        if api_req {
+            rsp.merge(
+                WrappedResult::new(-100, "access denied", "")
+                    .respond_to(req)
+                    .unwrap(),
+            );
             return;
         }
     }))
