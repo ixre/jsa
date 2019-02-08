@@ -1,5 +1,3 @@
-use std::io::Cursor;
-
 use rocket::fairing::AdHoc;
 use rocket::http::Header;
 use rocket::Request;
@@ -20,7 +18,8 @@ pub fn mount_routes(r: Rocket) -> Rocket {
         .mount("/static", StaticFiles::from("./static"))
         .mount("/console/api", routes![console::login,
             console::check_session,
-            console::initial])
+            console::initial,
+            console::logout])
         .mount("/console", StaticFiles::from("./app"));
     attach_user_middleware(r)
 }

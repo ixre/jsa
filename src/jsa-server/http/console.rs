@@ -49,6 +49,21 @@ pub fn login(mut cookies: Cookies) -> WrappedResult {
     WrappedResult::new(0, "", cli_map)
 }
 
+#[post("/user/logout")]
+pub fn logout(mut cookies: Cookies) -> WrappedResult {
+    let sid = session_id(&cookies);
+    if sid.len() == 0 {
+        return WrappedResult::new(1, "logout success", Map::new());
+    }
+    // Clean session id
+    let mut cookie = cookies.get("SessionID").unwrap().to_owned();
+    cookie.set_expires(time::empty_tm());
+    cookies.remove(cookie);
+    // Clean session storage
+    super::remove_session(&sid);
+    WrappedResult::new(0, "", Map::new())
+}
+
 fn session_id(cookies: &Cookies) -> String {
     if let Some(ck) = cookies.get("SessionID") {
         return ck.value().to_string();

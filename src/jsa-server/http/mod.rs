@@ -69,7 +69,7 @@ impl<'r> Responder<'r> for WrappedResult {
     }
 }
 
-lazy_static!{
+lazy_static! {
     static ref SESSION_STORE: HashSessionStore<SessionPair> = session::hash_session();
 }
 
@@ -80,4 +80,8 @@ pub fn get_session(key: &str) -> Option<HashMap<String, String>> {
 
 pub fn flush_session(key: &str, map: HashMap<String, String>) {
     SESSION_STORE.set(&key.into(), map);
+}
+
+pub fn remove_session(key: &str) {
+    SESSION_STORE.remove(&key.into());
 }
