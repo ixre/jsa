@@ -30,7 +30,6 @@ fn attach_user_middleware(r: Rocket) -> Rocket {
         rsp.set_header(Header::new("JSA-Version", "1.0"));
         rsp.remove_header("Server");
         let path = req.uri().path();
-        let method = req.method().to_string();
         let api_req = path.starts_with("/console/api/"); // Is a api request
         let login_req = path.starts_with("/console/api/login"); // Is a login request
         let is_login_ok = check_login(req);

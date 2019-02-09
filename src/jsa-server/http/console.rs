@@ -10,6 +10,8 @@ use serde_json::Map;
 use crate::http::Context;
 use crate::http::WrappedResult;
 
+use super::super::{NAME, VERSION};
+
 #[get("/")]
 pub fn index() -> Redirect {
     Redirect::temporary("/console/")
@@ -77,12 +79,13 @@ pub fn check_session(cookies: Cookies) -> JsonValue {
     if sid.len() == 0 {
         return json!({"code":1,"err_msg":"用户未登陆".to_string()});
     }
-    if let Some(d) = super::get_session(&sid) {
+    if let Some(_) = super::get_session(&sid) {
         return json!({"code":0,"SessionID":sid});
     }
     return json!({"code":2,"err_msg":"会话已过期".to_string()});
 }
 
+/// Return initialize data for dashboard
 #[post("/initial")]
 pub fn initial(ctx: Context) -> JsonValue {
     let mut nick_name = String::from("");
@@ -90,5 +93,7 @@ pub fn initial(ctx: Context) -> JsonValue {
     if let Some(d) = super::get_session(&sid) {
         nick_name = d.get("nick_name").unwrap().to_string();
     }
-    json!({"nick_name":nick_name})
+    json!({"nick_name":nick_name,
+    "sys_name":NAME,
+    "version":VERSION})
 }
