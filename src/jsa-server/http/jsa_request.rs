@@ -1,9 +1,9 @@
 use std::io::Cursor;
 
 use rocket::response;
+use rocket::Response;
 use rocket::response::Redirect;
 use rocket::response::Responder;
-use rocket::Response;
 
 use crate::MANAGER;
 use crate::VERSION;
@@ -21,10 +21,8 @@ pub fn all_request<'a>(ctx: Context) -> response::Result<'a> {
     // get segments
     let mut segments: Vec<&str> = path.split('/').collect();
     segments.remove(0);
-    let it;
-    unsafe {
-        it = MANAGER.as_ref().unwrap().get_item(&host);
-    }
+    let lock = MANAGER.lock().unwrap();
+    let it = lock.as_ref().unwrap().get_item(&host);
     //debug_log(&[String::from("source host"), host]);
     if let Some(item) = it {
         // get query params
