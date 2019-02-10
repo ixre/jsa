@@ -6,7 +6,7 @@ use core::hash::Hash;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-pub use hash_storage::HashSessionStore;
+pub use self::hash_storage::HashSessionStore;
 pub use typemap::Key;
 use uuid::Uuid;
 

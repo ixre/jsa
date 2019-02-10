@@ -25,7 +25,9 @@ fn arc_mutex() {
             *s += 1;
         }));
     }
-    threads.into_iter().for_each(|t| { t.join(); });
+    threads.into_iter().for_each(|t| {
+        t.join();
+    });
     println!("{:?}", *global.lock().unwrap())
 }
 
@@ -40,7 +42,9 @@ fn rw_lock() {
             *s += 1;
         }));
     }
-    threads.into_iter().for_each(|t| { t.join(); });
+    threads.into_iter().for_each(|t| {
+        t.join();
+    });
     println!("{:?}", *global.read().unwrap())
 }
 
@@ -48,7 +52,9 @@ fn rw_lock() {
 fn test_die_lock() {
     let x = Arc::new(Mutex::new(0));
     let clone = (x.clone(), x.clone());
-    {let mut v = clone.0.lock().unwrap();
-    *v += 1;}
+    {
+        let mut v = clone.0.lock().unwrap();
+        *v += 1;
+    }
     clone.1.lock();
 }

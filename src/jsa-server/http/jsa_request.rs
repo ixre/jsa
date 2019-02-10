@@ -1,9 +1,9 @@
 use std::io::Cursor;
 
 use rocket::response;
-use rocket::Response;
 use rocket::response::Redirect;
 use rocket::response::Responder;
+use rocket::Response;
 
 use crate::MANAGER;
 use crate::VERSION;

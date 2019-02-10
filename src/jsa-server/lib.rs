@@ -8,9 +8,12 @@ extern crate rocket;
 extern crate rocket_contrib;
 #[macro_use]
 extern crate serde_derive;
+
 use std::sync::Mutex;
 
 use crate::jsa::ItemManager;
+
+pub use self::user::User;
 
 pub mod http;
 mod jsa;
@@ -22,9 +25,9 @@ const NAME: &str = "JSA";
 const VERSION: &str = "1.0";
 
 lazy_static! {
-   static ref MANAGER: Mutex<Option<ItemManager>> = Mutex::new(None);
-   static ref DEBUG_MODE: Mutex<bool> = Mutex::new(false);
-   static ref CONF_PATH:Mutex<String> = Mutex::new(String::from("./conf"));
+    static ref MANAGER: Mutex<Option<ItemManager>> = Mutex::new(None);
+    static ref DEBUG_MODE: Mutex<bool> = Mutex::new(false);
+    static ref CONF_PATH: Mutex<String> = Mutex::new(String::from("./conf"));
 }
 
 pub fn init(conf: &str, debug: bool) {

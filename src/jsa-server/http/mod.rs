@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
-use rocket::Outcome;
 use rocket::request;
-use rocket::Request;
 use rocket::request::FromRequest;
 use rocket::response;
 use rocket::response::content;
 use rocket::response::Responder;
+use rocket::Outcome;
+use rocket::Request;
 use session::HashSessionStore;
 use session::SessionPair;
 use session::SessionStore;
@@ -72,7 +72,6 @@ impl<'r> Responder<'r> for WrappedResult {
 lazy_static! {
     static ref SESSION_STORE: HashSessionStore<SessionPair> = session::hash_session();
 }
-
 
 pub fn get_session(key: &str) -> Option<HashMap<String, String>> {
     return SESSION_STORE.get(&key.into());

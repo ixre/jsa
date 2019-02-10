@@ -1,13 +1,6 @@
 [[user]]
-name="master"
-pwd="123456"
-flag=1
-email=""
-api_tokens=[]
-
-[[user]]
-name="jarry"
-pwd="123456"
-flag=1
-email=""
-api_tokens=[]
+name = 'admin'
+pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
+flag = 1
+email = 'jarrysix@gmail.com'
+api_tokens = []
