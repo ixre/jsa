@@ -16,6 +16,7 @@ serde_json = "~1.0"
 serde_derive = "~1.0"
 time = "~0.1"
 lazy_static = "*"
+sha1 = "~0.6"
 session = {path="src/session"}
 
 [lib]

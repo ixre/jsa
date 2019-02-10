@@ -18,7 +18,7 @@ fn mutex() {
 fn arc_mutex() {
     let global = Arc::new(Mutex::new(0));
     let mut threads = vec![];
-    for i in 0..5 {
+    for _i in 0..5 {
         let clone = global.clone();
         threads.push(thread::spawn(move || {
             let mut s = clone.lock().unwrap();
@@ -33,7 +33,7 @@ fn arc_mutex() {
 fn rw_lock() {
     let global = Arc::new(RwLock::new(0));
     let mut threads = vec![];
-    for i in 0..5 {
+    for _i in 0..5 {
         let clone = global.clone();
         threads.push(thread::spawn(move || {
             let mut s = clone.write().unwrap();

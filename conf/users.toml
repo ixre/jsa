@@ -1,13 +1,13 @@
-[user]
-name = "master"
-pwd = "123456"
-flag = 1
-email = ""
-api_tokens = []
+[[user]]
+name="master"
+pwd="123456"
+flag=1
+email=""
+api_tokens=[]
 
-[user]
-name = "jarry"
-pwd = "123456"
-flag = 1
-email = ""
-api_tokens = []
+[[user]]
+name="jarry"
+pwd="123456"
+flag=1
+email=""
+api_tokens=[]
