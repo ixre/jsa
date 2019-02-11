@@ -3,10 +3,12 @@ extern crate time;
 use std::collections::HashMap;
 
 use rocket::http::{Cookie, Cookies};
+use rocket::request::Form;
 use rocket::response::Redirect;
 use rocket_contrib::json::JsonValue;
 use serde_json::Map;
 
+use crate::{User, UserFlag};
 use crate::http::Context;
 use crate::http::WrappedResult;
 
@@ -30,25 +32,44 @@ pub fn login2() -> JsonValue {
     json!({"hello":"123"})
 }
 
-#[post("/login")]
-pub fn login(mut cookies: Cookies) -> WrappedResult {
-    let key = session::generate_id();
-    // Save to session storage
-    let mut session_map = HashMap::new();
-    session_map.insert("is_admin".to_string(), "1".to_string());
-    session_map.insert("nick_name".to_string(), "admin".to_string());
-    super::flush_session(&key, session_map);
-    // flush to client
-    let mut ck_id = Cookie::new("SessionID", key);
-    let mut expires = time::now_utc();
-    expires.tm_min += 30;
-    ck_id.set_expires(expires);
-    ck_id.set_path("/console/api");
-    let mut cli_map = Map::new();
-    cli_map.insert("SessionID".into(), ck_id.value().into());
-    cookies.add(ck_id);
-    // return to client
-    WrappedResult::new(0, "", cli_map)
+#[derive(FromForm, Debug)]
+pub struct LoginParams {
+    user: String,
+    pwd: String,
+}
+
+#[post("/login", data = "<user>")]
+pub fn login(mut cookies: Cookies, user: Form<LoginParams>) -> WrappedResult {
+    if let Some(u) = User::get_user(&user.user) {
+        if user.pwd != u.pwd {
+            return WrappedResult::new(2, "密码不正确", "");
+        }
+        let flags = (UserFlag::Enabled as i8, UserFlag::SuperUser as i8);
+        if u.flag & flags.0 != flags.0 {
+            return WrappedResult::new(2, "用户已停用", "");
+        }
+        let is_super = u.flag & flags.1 == flags.1;
+        // Save to session storage
+        let key = session::generate_id();
+        let mut map = HashMap::new();
+        map.insert("UserID".to_string(), u.name.to_string());
+        map.insert("SuperUser".to_string(), if is_super { "1" } else { "0" }.to_string());
+        map.insert("NickName".to_string(), u.name.to_string());
+        super::flush_session(&key, map);
+        // flush to client
+        let mut ck_id = Cookie::new("SessionID", key);
+        let mut expires = time::now_utc();
+        expires.tm_min += 30;
+        ck_id.set_expires(expires);
+        ck_id.set_path("/console/api");
+        let mut map = Map::new();
+        map.insert("SessionID".into(), ck_id.value().into());
+        map.insert("SuperUser".into(), if is_super { "1" } else { "0" }.into());
+        cookies.add(ck_id);
+        // return to client
+        return WrappedResult::new(0, "", map);
+    }
+    return WrappedResult::new(1, "用户或密码不正确", "");
 }
 
 #[post("/user/logout")]
@@ -88,10 +109,10 @@ pub fn check_session(cookies: Cookies) -> JsonValue {
 /// Return initialize data for dashboard
 #[post("/initial")]
 pub fn initial(ctx: Context) -> JsonValue {
-    let mut nick_name = String::from("");
+    let mut nick_name = String::new();
     let sid = session_id(&ctx.req.cookies());
     if let Some(d) = super::get_session(&sid) {
-        nick_name = d.get("nick_name").unwrap().to_string();
+        nick_name = d.get("NickName").unwrap().to_string();
     }
     json!({"nick_name":nick_name,
     "sys_name":NAME,

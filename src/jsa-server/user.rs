@@ -5,10 +5,9 @@ use std::io::Read;
 use std::io::Write;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::thread;
 
 use sha1::Sha1;
-use std::thread;
-use std::time::Duration;
 
 /// User flag
 pub enum UserFlag {
@@ -102,7 +101,7 @@ impl User {
 
     fn flush_users() {
         let clone = USERS.clone();
-        thread::spawn(move||{
+        thread::spawn(move || {
             let lock = clone.lock().unwrap();
             let users: Vec<User> = lock.iter().map(|(_, v)| v.clone()).collect();
             Self::flush2_file(&Self::path(), &UserToml { user: users });
@@ -151,7 +150,7 @@ fn test_load_users() {
         user.email = "jarrysix@gmail.com".to_string();
         User::save_user(&user);
     }
-    thread::sleep(Duration::from_secs(3));
+    thread::sleep(std::time::Duration::from_secs(3));
 }
 
 #[test]

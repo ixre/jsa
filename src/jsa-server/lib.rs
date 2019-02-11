@@ -14,6 +14,7 @@ use std::sync::Mutex;
 use crate::jsa::ItemManager;
 
 pub use self::user::User;
+pub use self::user::UserFlag;
 
 pub mod http;
 mod jsa;
