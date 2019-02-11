@@ -72,7 +72,7 @@ pub fn login(mut cookies: Cookies, user: Form<LoginParams>) -> WrappedResult {
     return WrappedResult::new(1, "用户或密码不正确", "");
 }
 
-#[post("/user/logout")]
+#[post("/logout")]
 pub fn logout(mut cookies: Cookies) -> WrappedResult {
     let sid = session_id(&cookies);
     if sid.len() == 0 {
@@ -81,10 +81,11 @@ pub fn logout(mut cookies: Cookies) -> WrappedResult {
     // Clean session id
     let mut cookie = cookies.get("SessionID").unwrap().to_owned();
     cookie.set_expires(time::empty_tm());
+    cookie.set_value(sid.clone());
     cookies.remove(cookie);
     // Clean session storage
     super::remove_session(&sid);
-    WrappedResult::new(0, "", Map::new())
+    WrappedResult::new(0, "logout success", Map::new())
 }
 
 fn session_id(cookies: &Cookies) -> String {
@@ -109,12 +110,23 @@ pub fn check_session(cookies: Cookies) -> JsonValue {
 /// Return initialize data for dashboard
 #[post("/initial")]
 pub fn initial(ctx: Context) -> JsonValue {
-    let mut nick_name = String::new();
     let sid = session_id(&ctx.req.cookies());
-    if let Some(d) = super::get_session(&sid) {
-        nick_name = d.get("NickName").unwrap().to_string();
+    match super::get_session(&sid) {
+        Some(d) => {
+            let user_id = d.get("UserID").unwrap().to_string();
+            return match User::get_user(&user_id) {
+                Some(u) => json!({"sys_name":NAME,
+                "version":VERSION,
+                "user":{
+                    "name":u.name,
+                    "nick_name":u.name,
+                    "flag":u.flag,
+                    "email":u.email,
+                    "api_enabled":u.api_tokens.len() > 0
+                }}),
+                None => json!({"code":2,"err_msg":"user not exists"})
+            };
+        }
+        None => json!({"code":1,"err_msg":"access denied"})
     }
-    json!({"nick_name":nick_name,
-    "sys_name":NAME,
-    "version":VERSION})
 }

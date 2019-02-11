@@ -1,7 +1,7 @@
 use rocket::fairing::AdHoc;
 use rocket::http::Header;
-use rocket::response::Responder;
 use rocket::Request;
+use rocket::response::Responder;
 use rocket::Rocket;
 use rocket_contrib::serve::StaticFiles;
 
@@ -35,8 +35,11 @@ fn attach_user_middleware(r: Rocket) -> Rocket {
         rsp.set_header(Header::new("JSA-Version", "1.0"));
         rsp.remove_header("Server");
         let path = req.uri().path();
-        let api_req = path.starts_with("/console/api/"); // Is a api request
-        let login_req = path.starts_with("/console/api/login"); // Is a login request
+        // Is a api request
+        let api_req = path.starts_with("/console/api/");
+        // Is a login request
+        let login_req = path.starts_with("/console/api/login") ||
+            path.starts_with("/console/api/logout");
         let is_login_ok = check_login(req);
         // Set CORS header for api request if user is logged.
         if login_req || (api_req && is_login_ok) {
