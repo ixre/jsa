@@ -1,6 +1,21 @@
 [[user]]
 name = 'admin'
 pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
-flag = 1
+flag = 3
 email = 'jarrysix@gmail.com'
+api_tokens = []
+
+[[user]]
+name = 'user1'
+pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
+flag = 1
+email = 'jarrysix1@gmail.com'
+api_tokens = []
+
+
+[[user]]
+name = 'user2'
+pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
+flag = 1
+email = 'jarrysix1@gmail.com'
 api_tokens = []

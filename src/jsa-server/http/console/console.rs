@@ -4,33 +4,14 @@ use std::collections::HashMap;
 
 use rocket::http::{Cookie, Cookies};
 use rocket::request::Form;
-use rocket::response::Redirect;
 use rocket_contrib::json::JsonValue;
 use serde_json::Map;
 
 use crate::{User, UserFlag};
+use crate::{NAME, VERSION};
+use crate::http::{flush_session, get_session, remove_session};
 use crate::http::Context;
 use crate::http::WrappedResult;
-
-use super::super::{NAME, VERSION};
-
-#[get("/")]
-pub fn index() -> Redirect {
-    Redirect::temporary("/console/")
-}
-
-#[get("/index2")]
-pub fn index2() -> &'static str {
-    //let mut s = "Hello, world!".to_string();
-    //s.push_str(req.headers().get_one("Host").unwrap());
-    //s.as_str();
-    "hello world"
-}
-
-#[get("/login")]
-pub fn login2() -> JsonValue {
-    json!({"hello":"123"})
-}
 
 #[derive(FromForm, Debug)]
 pub struct LoginParams {
@@ -49,13 +30,14 @@ pub fn login(mut cookies: Cookies, user: Form<LoginParams>) -> WrappedResult {
             return WrappedResult::new(2, "用户已停用", "");
         }
         let is_super = u.flag & flags.1 == flags.1;
+        let super_str = if is_super { "1" } else { "0" }.to_string();
         // Save to session storage
         let key = session::generate_id();
         let mut map = HashMap::new();
         map.insert("UserID".to_string(), u.name.to_string());
-        map.insert("SuperUser".to_string(), if is_super { "1" } else { "0" }.to_string());
+        map.insert("SuperUser".to_string(), super_str.clone());
         map.insert("NickName".to_string(), u.name.to_string());
-        super::flush_session(&key, map);
+        flush_session(&key, map);
         // flush to client
         let mut ck_id = Cookie::new("SessionID", key);
         let mut expires = time::now_utc();
@@ -64,7 +46,7 @@ pub fn login(mut cookies: Cookies, user: Form<LoginParams>) -> WrappedResult {
         ck_id.set_path("/console/api");
         let mut map = Map::new();
         map.insert("SessionID".into(), ck_id.value().into());
-        map.insert("SuperUser".into(), if is_super { "1" } else { "0" }.into());
+        map.insert("SuperUser".into(), super_str.into());
         cookies.add(ck_id);
         // return to client
         return WrappedResult::new(0, "", map);
@@ -84,7 +66,7 @@ pub fn logout(mut cookies: Cookies) -> WrappedResult {
     cookie.set_value(sid.clone());
     cookies.remove(cookie);
     // Clean session storage
-    super::remove_session(&sid);
+    remove_session(&sid);
     WrappedResult::new(0, "logout success", Map::new())
 }
 
@@ -101,7 +83,7 @@ pub fn check_session(cookies: Cookies) -> JsonValue {
     if sid.len() == 0 {
         return json!({"code":1,"err_msg":"用户未登陆".to_string()});
     }
-    if let Some(_) = super::get_session(&sid) {
+    if let Some(_) = get_session(&sid) {
         return json!({"code":0,"SessionID":sid});
     }
     return json!({"code":2,"err_msg":"会话已过期".to_string()});
@@ -111,7 +93,7 @@ pub fn check_session(cookies: Cookies) -> JsonValue {
 #[post("/initial")]
 pub fn initial(ctx: Context) -> JsonValue {
     let sid = session_id(&ctx.req.cookies());
-    match super::get_session(&sid) {
+    match get_session(&sid) {
         Some(d) => {
             let user_id = d.get("UserID").unwrap().to_string();
             return match User::get_user(&user_id) {
@@ -124,9 +106,9 @@ pub fn initial(ctx: Context) -> JsonValue {
                     "email":u.email,
                     "api_enabled":u.api_tokens.len() > 0
                 }}),
-                None => json!({"code":2,"err_msg":"user not exists"})
+                None => json!({"code":2,"err_msg":"user not exists"}),
             };
         }
-        None => json!({"code":1,"err_msg":"access denied"})
+        None => json!({"code":1,"err_msg":"access denied"}),
     }
 }

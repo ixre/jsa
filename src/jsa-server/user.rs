@@ -76,7 +76,7 @@ impl User {
         u.user.push(User {
             name: "admin".to_string(),
             pwd: Self::pwd("123456"),
-            flag: 1,
+            flag: UserFlag::Enabled as i8 | UserFlag::SuperUser as i8,
             email: "".to_string(),
             api_tokens: vec![],
         });
@@ -120,13 +120,19 @@ impl User {
         s
     }
 
+    pub fn take_users(begin: usize, over: usize) -> (usize, Vec<User>) {
+        let mut rows = Self::get_users();
+        rows.sort_by(|a, b| a.name.cmp(&b.name));
+        let len = rows.len();
+        (len, rows[begin..over.min(len)].to_vec())
+    }
+
     pub fn get_user(user: &str) -> Option<User> {
         let lock = USERS.lock().unwrap();
         if !lock.contains_key(user) {
             return None;
         }
         Some(lock.get(user).unwrap().clone())
-        //lock.iter().find(|(k, v)| k.to_string() == user.into()).map(|(k,v)|v.clone()).take()
     }
 
     pub fn save_user(user: &User) -> Result<usize, &str> {

@@ -1,7 +1,7 @@
 use rocket::fairing::AdHoc;
 use rocket::http::Header;
-use rocket::Request;
 use rocket::response::Responder;
+use rocket::Request;
 use rocket::Rocket;
 use rocket_contrib::serve::StaticFiles;
 
@@ -16,15 +16,7 @@ pub fn mount_routes(r: Rocket) -> Rocket {
             routes![index::index, index::all, index::favicon, index::board],
         )
         .mount("/static", StaticFiles::from("./static"))
-        .mount(
-            "/console/api",
-            routes![
-                console::login,
-                console::check_session,
-                console::initial,
-                console::logout
-            ],
-        )
+        .mount("/console/api", console::get_routes())
         .mount("/console", StaticFiles::from("./app"));
     attach_user_middleware(r)
 }
@@ -38,8 +30,8 @@ fn attach_user_middleware(r: Rocket) -> Rocket {
         // Is a api request
         let api_req = path.starts_with("/console/api/");
         // Is a login request
-        let login_req = path.starts_with("/console/api/login") ||
-            path.starts_with("/console/api/logout");
+        let login_req =
+            path.starts_with("/console/api/login") || path.starts_with("/console/api/logout");
         let is_login_ok = check_login(req);
         // Set CORS header for api request if user is logged.
         if login_req || (api_req && is_login_ok) {
