@@ -7,11 +7,11 @@ use rocket::request::Form;
 use rocket_contrib::json::JsonValue;
 use serde_json::Map;
 
-use crate::{User, UserFlag};
-use crate::{NAME, VERSION};
-use crate::http::{flush_session, get_session, remove_session};
 use crate::http::Context;
 use crate::http::WrappedResult;
+use crate::http::{flush_session, get_session, remove_session};
+use crate::{User, UserFlag};
+use crate::{NAME, VERSION};
 
 #[derive(FromForm, Debug)]
 pub struct LoginParams {
@@ -34,9 +34,9 @@ pub fn login(mut cookies: Cookies, user: Form<LoginParams>) -> WrappedResult {
         // Save to session storage
         let key = session::generate_id();
         let mut map = HashMap::new();
-        map.insert("UserID".to_string(), u.name.to_string());
+        map.insert("UserID".to_string(), u.user.to_string());
         map.insert("SuperUser".to_string(), super_str.clone());
-        map.insert("NickName".to_string(), u.name.to_string());
+        map.insert("NickName".to_string(), u.user.to_string());
         flush_session(&key, map);
         // flush to client
         let mut ck_id = Cookie::new("SessionID", key);
@@ -100,6 +100,7 @@ pub fn initial(ctx: Context) -> JsonValue {
                 Some(u) => json!({"sys_name":NAME,
                 "version":VERSION,
                 "user":{
+                    "user":u.user,
                     "name":u.name,
                     "nick_name":u.name,
                     "flag":u.flag,

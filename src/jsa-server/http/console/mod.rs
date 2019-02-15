@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::io::Read;
 
-use rocket::Data;
 use rocket::data::FromData;
 use rocket::data::Outcome;
 use rocket::data::Transform;
@@ -9,6 +8,7 @@ use rocket::data::Transformed;
 use rocket::http::Status;
 use rocket::outcome::Outcome::Failure;
 use rocket::outcome::Outcome::Success;
+use rocket::Data;
 use rocket::Request;
 use rocket::Route;
 
@@ -51,7 +51,7 @@ impl<'a> FromData<'a> for PagingParams {
         let mut string = String::with_capacity((NAME_LIMIT / 2) as usize);
         let outcome = match stream.read_to_string(&mut string) {
             Ok(_) => Success(string),
-            Err(e) => Failure((Status::InternalServerError, ()))
+            Err(e) => Failure((Status::InternalServerError, ())),
         };
         // Returning `Borrowed` here means we get `Borrowed` in `from_data`.
         Transform::Borrowed(outcome)
@@ -79,13 +79,14 @@ impl<'a> FromData<'a> for PagingParams {
     }
 }
 
-
 pub fn get_routes() -> Vec<Route> {
     routes![
         console::login,
         console::check_session,
         console::initial,
         console::logout,
-        user::user_list
+        user::user_list,
+        user::get_user,
+        user::save_user
     ]
 }

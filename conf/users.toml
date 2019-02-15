@@ -1,20 +1,22 @@
 [[user]]
-name = 'admin'
-pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
-flag = 3
+user = 'admin'
+name = 'JSA Master'
+pwd = '7c222fb2927d828af22f592134e8932480637c0d'
+flag = 7
 email = 'jarrysix@gmail.com'
 api_tokens = []
 
 [[user]]
-name = 'user1'
+user = 'user1'
+name = 'USER1'
 pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
-flag = 1
-email = 'jarrysix1@gmail.com'
+flag = 0
+email = 'jarrysix2@gmail.com'
 api_tokens = []
 
-
 [[user]]
-name = 'user2'
+user = 'user2'
+name = 'USER2'
 pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
 flag = 1
 email = 'jarrysix1@gmail.com'

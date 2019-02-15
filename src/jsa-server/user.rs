@@ -11,12 +11,17 @@ use sha1::Sha1;
 
 /// User flag
 pub enum UserFlag {
+    /// 是否启用
     Enabled = 1,
-    SuperUser = 2,
+    /// 是否激活
+    Activated = 2,
+    /// 是否为超级用户
+    SuperUser = 4,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
+    pub user: String,
     pub name: String,
     pub pwd: String,
     pub flag: i8,
@@ -55,7 +60,7 @@ fn users_init() -> HashMap<String, User> {
     let dst: Result<UserToml, toml::de::Error> = toml::from_str(&buf);
     match dst {
         Ok(arr) => arr.user.into_iter().for_each(|u| {
-            users.insert(u.name.clone(), u);
+            users.insert(u.user.clone(), u);
         }),
         Err(err) => panic!("Deserialize users except:{}", err),
     };
@@ -74,9 +79,10 @@ impl User {
     fn flush_defaults(p: &str) -> UserToml {
         let mut u = UserToml { user: vec![] };
         u.user.push(User {
+            user: "admin".to_string(),
             name: "admin".to_string(),
             pwd: Self::pwd("123456"),
-            flag: UserFlag::Enabled as i8 | UserFlag::SuperUser as i8,
+            flag: UserFlag::Enabled as i8 | UserFlag::Activated as i8 | UserFlag::SuperUser as i8,
             email: "".to_string(),
             api_tokens: vec![],
         });
@@ -122,7 +128,7 @@ impl User {
 
     pub fn take_users(begin: usize, over: usize) -> (usize, Vec<User>) {
         let mut rows = Self::get_users();
-        rows.sort_by(|a, b| a.name.cmp(&b.name));
+        rows.sort_by(|a, b| a.user.cmp(&b.user));
         let len = rows.len();
         (len, rows[begin..over.min(len)].to_vec())
     }
@@ -135,11 +141,22 @@ impl User {
         Some(lock.get(user).unwrap().clone())
     }
 
+    /// Get activated user by email
+    pub fn get_user_mail(email: &str) -> Option<User> {
+        let lock = USERS.lock().unwrap();
+        let email = email.to_owned();
+        let i = UserFlag::Activated as i8;
+        let s = lock.iter().find(|(_, v)| v.email == email && i == i);
+        match s {
+            Some((_, it)) => Some(it.clone()),
+            None => None,
+        }
+    }
     pub fn save_user(user: &User) -> Result<usize, &str> {
         let clone = USERS.clone();
         let mut lock = clone.lock().unwrap();
-        if lock.contains_key(&user.name) {
-            lock.insert(user.name.clone(), user.clone());
+        if lock.contains_key(&user.user) {
+            lock.insert(user.user.clone(), user.clone());
             Self::flush_users();
             return Ok(1);
         }
@@ -167,7 +184,7 @@ fn test_get_users() {
         map0.insert(
             "tom".to_string(),
             User {
-                name: "tom".to_string(),
+                user: "tom".to_string(),
                 pwd: "".to_string(),
                 flag: 0,
                 email: "".to_string(),
@@ -181,7 +198,7 @@ fn test_get_users() {
         map1.insert(
             "william".to_string(),
             User {
-                name: "tom".to_string(),
+                user: "tom".to_string(),
                 pwd: "".to_string(),
                 flag: 0,
                 email: "".to_string(),
@@ -191,7 +208,7 @@ fn test_get_users() {
         map1.insert(
             "jack".to_string(),
             User {
-                name: "tom".to_string(),
+                user: "tom".to_string(),
                 pwd: "".to_string(),
                 flag: 0,
                 email: "".to_string(),
