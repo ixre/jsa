@@ -160,7 +160,18 @@ impl User {
             Self::flush_users();
             return Ok(1);
         }
-        Err("no such user")
+        if user.user.trim().len() == 0 {
+            return Err("用户不能为空");
+        }
+        if user.pwd.len() == 0 {
+            return Err("未设置密码");
+        }
+        if user.email.len() == 0 {
+            return Err("电子邮箱不能为空");
+        }
+        lock.insert(user.user.clone(), user.clone());
+        Self::flush_users();
+        return Ok(1);
     }
 }
 

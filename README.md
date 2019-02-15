@@ -1,10 +1,13 @@
 # Jsa 
 一个使用Rust编写的短域名，及302跳转的小应用。
 
-[JSA仪表盘项目](https://github.com/jsix/jsa-react)
 
-[另外一个用go语言编写的程序](https://github.com/jsix/gord)
 
+![JSA-Snapshots](snapshots/users.png)
+
+**相关资源**
+* [JSA仪表盘项目](https://github.com/jsix/jsa-react)  
+* [另外一个用go语言编写的程序](https://github.com/jsix/gord)
 
 ## 应用场景 ##
 1. 做302跳转

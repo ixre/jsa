@@ -33,7 +33,7 @@ pub fn get_user(user: String) -> JsonValue {
 #[post("/user/save", data = "<user>")]
 pub fn save_user(user: Form<UserEntity>) -> JsonValue {
     let mut u = User::get_user(&user.user).unwrap_or(User {
-        user: user.user.clone(),
+        user: user.user.to_lowercase(),
         name: "".to_string(),
         pwd: "".to_string(),
         flag: UserFlag::Enabled as i8,
@@ -44,7 +44,7 @@ pub fn save_user(user: Form<UserEntity>) -> JsonValue {
     if u.name == "" {
         u.name = u.user.to_owned();
     }
-    if u.pwd != user.pwd && u.pwd != "" {
+    if u.pwd != user.pwd && user.pwd != "" {
         u.pwd = User::pwd(user.pwd.to_owned());
     }
     u.flag = u.flag | user.flag;

@@ -1,12 +1,4 @@
 [[user]]
-user = 'admin'
-name = 'JSA Master'
-pwd = '7c222fb2927d828af22f592134e8932480637c0d'
-flag = 7
-email = 'jarrysix@gmail.com'
-api_tokens = []
-
-[[user]]
 user = 'user1'
 name = 'USER1'
 pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
@@ -20,4 +12,20 @@ name = 'USER2'
 pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
 flag = 1
 email = 'jarrysix1@gmail.com'
+api_tokens = []
+
+[[user]]
+user = 'sam'
+name = 'SAM'
+pwd = '7c4a8d09ca3762af61e59520943dc26494f8941b'
+flag = 1
+email = 'sam@tom.com'
+api_tokens = []
+
+[[user]]
+user = 'admin'
+name = 'JSA Master'
+pwd = '7c222fb2927d828af22f592134e8932480637c0d'
+flag = 7
+email = 'jarrysix@gmail.com'
 api_tokens = []
