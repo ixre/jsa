@@ -1,0 +1,13 @@
+host = "to2.net"
+global_pattern = ""
+[[paths]]
+id = 1
+path = "/"
+pattern = "//baidu.com"
+note = ""
+
+[[paths]]
+id = 2
+path = "/"
+pattern = "//baidu.com"
+note = ""

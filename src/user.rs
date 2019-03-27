@@ -79,8 +79,8 @@ impl User {
     fn flush_defaults(p: &str) -> UserToml {
         let mut u = UserToml { user: vec![] };
         u.user.push(User {
-            user: "admin".to_string(),
-            name: "admin".to_string(),
+            user: "root".to_string(),
+            name: "root".to_string(),
             pwd: Self::pwd("123456"),
             flag: UserFlag::Enabled as i8 | UserFlag::Activated as i8 | UserFlag::SuperUser as i8,
             email: "".to_string(),
@@ -179,7 +179,7 @@ impl User {
 fn test_load_users() {
     let v = User::get_users();
     println!("{:#?}", v);
-    if let Some(mut user) = User::get_user("admin") {
+    if let Some(mut user) = User::get_user("root") {
         //assert_eq!(1,3);
         user.email = "jarrysix@gmail.com".to_string();
         User::save_user(&user);

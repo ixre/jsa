@@ -23,7 +23,7 @@ email = 'sam@tom.com'
 api_tokens = []
 
 [[user]]
-user = 'admin'
+user = 'root'
 name = 'JSA Master'
 pwd = '7c222fb2927d828af22f592134e8932480637c0d'
 flag = 7

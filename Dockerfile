@@ -23,9 +23,9 @@ COPY --from=builder /home/rust/src/target/x86_64-unknown-linux-musl/release/jsa 
 COPY ./static ./static
 COPY ./app ./app
 
-VOLUME ["/conf"]
+VOLUME ["/data"]
 EXPOSE 8302
-ENTRYPOINT ./jsa -c /conf
+ENTRYPOINT ./jsa --data-dir /data
 
 
 

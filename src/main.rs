@@ -30,10 +30,10 @@ fn rocket(address: &str, port: u16) -> rocket::Rocket {
 
 fn main() {
     let args = [
-        Arg::with_name("conf")
-            .short("c")
+        Arg::with_name("data-dir")
+            .short("dd")
             .takes_value(true)
-            .default_value("./conf"),
+            .default_value("./data"),
         Arg::with_name("port")
             .short("p")
             .takes_value(true)
@@ -41,12 +41,12 @@ fn main() {
         Arg::with_name("debug").short("d").takes_value(false),
     ];
     let matches = App::new("jsa").args(&args).get_matches();
-    let conf = matches.value_of("conf").unwrap();
+    let data = matches.value_of("data-dir").unwrap();
     let debug = matches.is_present("debug");
     let _port = matches.value_of("port").unwrap();
     let port: u16 = _port.trim().parse().unwrap();
     let addr: String = "0.0.0.0:".to_string() + _port;
-    jsa::init(conf, debug);
+    jsa::init(data, debug);
     println!("[ Jsa][ Serve]: serve on port {}", _port);
     rocket("0.0.0.0", port).launch();
 }

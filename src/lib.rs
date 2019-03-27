@@ -19,6 +19,8 @@ pub use self::user::UserFlag;
 pub mod http;
 mod jsa;
 mod user;
+mod domain;
+mod paths;
 
 // App name
 const NAME: &str = "JSA";
