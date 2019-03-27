@@ -31,7 +31,6 @@ fn rocket(address: &str, port: u16) -> rocket::Rocket {
 fn main() {
     let args = [
         Arg::with_name("data-dir")
-            .short("dd")
             .takes_value(true)
             .default_value("./data"),
         Arg::with_name("port")

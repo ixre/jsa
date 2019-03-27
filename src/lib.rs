@@ -17,6 +17,7 @@ pub use self::user::User;
 pub use self::user::UserFlag;
 
 pub mod http;
+pub mod config;
 mod jsa;
 mod user;
 mod domain;
@@ -27,14 +28,28 @@ const NAME: &str = "JSA";
 // App version
 const VERSION: &str = "1.0";
 
+
+pub struct Context {
+    pub config:config::Config,
+}
+
 lazy_static! {
     static ref MANAGER: Mutex<Option<ItemManager>> = Mutex::new(None);
     static ref DEBUG_MODE: Mutex<bool> = Mutex::new(false);
     static ref CONF_PATH: Mutex<String> = Mutex::new(String::from("./conf"));
+    static ref CONTEXT:Mutex<Context> = Mutex::new(Context{
+        config:config::Config::new()
+    });
 }
 
 pub fn init(conf: &str, debug: bool) {
     *MANAGER.lock().unwrap() = Some(ItemManager::new(conf.to_owned()).unwrap());
     *DEBUG_MODE.lock().unwrap() = debug;
     *CONF_PATH.lock().unwrap() = conf.to_string();
+    let mut conf_path = CONF_PATH.lock().unwrap().clone();
+    conf_path.push_str("/config.toml");
+
+    *CONTEXT.lock().unwrap() = Context {
+        config: config::read_config(&conf_path)
+    };
 }
