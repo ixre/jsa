@@ -3,13 +3,13 @@ use std::io::{ErrorKind, Read, Write};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    pub db_url: String
+    pub db_url: String,
 }
 
 impl Config {
     pub fn new() -> Self {
         Config {
-            db_url: String::from("")
+            db_url: String::from(""),
         }
     }
 }
@@ -44,7 +44,6 @@ pub fn read_config(path: &str) -> Config {
         Err(err) => panic!("Deserialize users except:{}", err),
     }
 }
-
 
 // If config.toml not exists, create the default config.
 fn flush_defaults(path: &str) -> Config {

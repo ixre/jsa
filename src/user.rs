@@ -45,7 +45,7 @@ fn users_init() -> HashMap<String, User> {
         Err(err) => {
             if err.kind() == ErrorKind::NotFound {
                 User::flush_defaults(&file_path);
-                 File::open(&file_path).unwrap()
+                File::open(&file_path).unwrap()
             } else {
                 panic!("Open {} except:{}", &file_path, err);
             }

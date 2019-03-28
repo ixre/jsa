@@ -1,0 +1,10 @@
+CREATE TABLE domains (id  SERIAL NOT NULL, user_id int4 NOT NULL, hash varchar(20) NOT NULL, domain varchar(40) NOT NULL, flag int2 NOT NULL, state int2 NOT NULL, notes varchar(255) NOT NULL, create_time int4 NOT NULL, PRIMARY KEY (id));
+COMMENT ON TABLE domains IS '域名';
+COMMENT ON COLUMN domains.id IS '编号';
+COMMENT ON COLUMN domains.user_id IS '用户编号';
+COMMENT ON COLUMN domains.hash IS 'hash值';
+COMMENT ON COLUMN domains.domain IS '域名';
+COMMENT ON COLUMN domains.flag IS '标志';
+COMMENT ON COLUMN domains.state IS '状态';
+COMMENT ON COLUMN domains.notes IS '备注';
+COMMENT ON COLUMN domains.create_time IS '创建时间';
