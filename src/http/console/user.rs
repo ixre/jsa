@@ -2,7 +2,8 @@ use rocket::request::Form;
 use rocket_contrib::json::JsonValue;
 
 use crate::http::console::PagingParams;
-use crate::{User, UserFlag};
+use crate::{User, UserFlag, conn};
+use crate::repo::UserRepo;
 
 #[derive(FromForm, Debug)]
 pub struct UserEntity {
@@ -16,9 +17,9 @@ pub struct UserEntity {
 
 #[post("/user/list", data = "<p>")]
 pub fn user_list(p: PagingParams) -> JsonValue {
-    let begin = ((p.page - 1) * p.rows) as usize;
-    let over = begin + p.rows as usize;
-    let (total, rows) = User::take_users(begin, over);
+    let begin = ((p.page - 1) * p.rows) as i64;
+    let over = begin + p.rows as i64;
+    let (total, rows) =  UserRepo::take_users(&conn(),begin, over);
     json!({"total":total,"rows":rows})
 }
 
