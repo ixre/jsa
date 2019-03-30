@@ -2,7 +2,7 @@ use diesel::dsl::*;
 use diesel::prelude::*;
 
 use crate::errors::DataError;
-use crate::models::user::User;
+use crate::models::user::{User, NewUser};
 use crate::schema::u_user;
 use crate::schema::u_user::dsl::*;
 use crate::{Pool, UserFlag};
@@ -43,21 +43,30 @@ impl UserRepo {
             Err(_err) => None,
         }
     }
-    pub fn save_user(conn: &Pool, user_v: &User) -> Result<usize, DataError> {
-        if user_v.user.trim().len() == 0 {
+    pub fn save_user(conn: &Pool, v: &User) -> Result<usize, DataError> {
+        if v.user.trim().len() == 0 {
             return Err(DataError::from("用户不能为空".to_string()));
         }
-        if user_v.pwd.len() == 0 {
+        if v.pwd.len() == 0 {
             return Err(DataError::from("未设置密码".to_string()));
         }
-        if user_v.email.len() == 0 {
+        if v.email.len() == 0 {
             return Err(DataError::from("电子邮箱不能为空".to_string()));
         }
+        let mut v = v.clone();
+        v.user = v.user.to_lowercase();
+        if v.id <= 0{
+            v.flag = v.flag | UserFlag::Activated as i16;
+            return diesel::insert_into(u_user::table)
+                .values(NewUser::from(&v))
+                .execute(conn)
+                .map_err(From::from);
+        }
         diesel::insert_into(u_user::table)
-            .values(user_v)
+            .values(&v)
             .on_conflict(id)
             .do_update()
-            .set(user_v)
+            .set(&v)
             .execute(conn)
             .map_err(From::from)
     }

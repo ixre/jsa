@@ -16,10 +16,9 @@ pub enum DomainFlag {
     Stat = 2,
 }
 
-#[derive(Queryable, Debug, Clone, Serialize, Deserialize)]
+#[derive(Queryable,Insertable,AsChangeset, Debug, Clone, Serialize, Deserialize)]
 #[table_name = "d_domain"]
 #[primary_key("id")]
-#[changeset_for(d_domain)]
 pub struct Domain {
     pub id: i32,
     pub user_id: i32,
@@ -30,6 +29,32 @@ pub struct Domain {
     pub notes: String,
     pub create_time: i32,
 }
+
+#[derive(Insertable)]
+#[table_name = "d_domain"]
+pub struct NewDomain {
+    pub user_id: i32,
+    pub hash: String,
+    pub domain: String,
+    pub flag: i16,
+    pub state: i16,
+    pub notes: String,
+    pub create_time: i32,
+}
+impl From<&Domain> for NewDomain{
+    fn from(src: &Domain) -> Self {
+        Self{
+            user_id: src.user_id,
+            hash: src.hash.clone(),
+            domain: src.domain.clone(),
+            flag: src.flag,
+            state: src.state,
+            notes:src.notes.clone(),
+            create_time: src.create_time
+        }
+    }
+}
+
 
 pub fn get_domain() {
     use crate::schema::d_domain::dsl::*;

@@ -6,6 +6,7 @@ use rocket::request::Form;
 use rocket::http::Cookies;
 use crate::models::user::UserFlag;
 use crate::http::{session_user, Context};
+use crate::models::domain::Domain;
 
 #[post("/domain/list", data = "<p>")]
 pub fn domain_list(p: PagingParams) -> JsonValue {
@@ -17,22 +18,44 @@ pub fn domain_list(p: PagingParams) -> JsonValue {
 
 #[derive(FromForm, Debug)]
 pub struct DomainEntity{
+    pub id:i32,
     pub domain:String,
     pub user_id:i32,
     pub notes:String,
-    pub state:bool
+    pub state:i16
 }
 
-
-
-#[post("/domain/save", data = "<domain>")]
-pub fn save_domain(ctx: Context,domain: Form<DomainEntity>) -> JsonValue {
+#[post("/domain/save", data = "<entity>")]
+pub fn save_domain(ctx: Context,entity: Form<DomainEntity>) -> JsonValue {
     let i =  UserFlag::SuperUser as i16;
     let u = session_user(&ctx.req.cookies()).unwrap();
-    if (u.flag & i != i) && u.id != domain.user_id{
+    if (u.flag & i != i) && u.id != entity.user_id{
        return json!({"code":1,"err_msg":"no such user"});
     }
-    json!({})
+    let conn = &conn();
+    let mut domain:Domain;
+    if entity.id >0 {
+        domain = DomainRepo::get(&conn,entity.id)
+            .expect("no such domain");
+    }else{
+        domain = Domain{
+            id: 0,
+            user_id: entity.user_id,
+            hash: "".to_string(),
+            domain: String::from(""),
+            flag: 0,
+            state: 0,
+            notes: String::from(""),
+            create_time: 0
+        }
+    }
+    domain.domain = entity.domain.clone();
+    domain.state =entity.state;
+    domain.notes = entity.notes.clone();
+    match DomainRepo::save(&conn,&domain){
+        Ok(_)=>json!({"code":0}),
+        Err(err)=>json!({"code":1,"err_msg":err.message()})
+    }
     /*
 
     let conn = conn();

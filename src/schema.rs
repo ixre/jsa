@@ -23,4 +23,7 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(d_domain, u_user,);
+allow_tables_to_appear_in_same_query!(
+    d_domain,
+    u_user,
+);

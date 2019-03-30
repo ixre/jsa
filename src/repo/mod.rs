@@ -5,11 +5,12 @@ use diesel::dsl::*;
 use diesel::prelude::*;
 use diesel_migrations::run_pending_migrations_in_directory;
 
+use crate::{conn, Pool, User, util};
 use crate::models::user::{NewUser, UserFlag};
-use crate::{conn, util, Pool};
 
-pub use self::user::*;
 pub use self::domain::*;
+pub use self::user::*;
+
 mod user;
 mod domain;
 
@@ -31,20 +32,18 @@ pub fn init_data() {
     };
     // initialize users
     init(u_user.select(count(id)).first(&conn), |conn| {
-        let u = NewUser {
+        let u = User {
+            id:0,
             user: "root".to_string(),
             name: "root".to_string(),
             pwd: util::pwd("123456"),
             flag: UserFlag::Enabled as i16
                 | UserFlag::Activated as i16
                 | UserFlag::SuperUser as i16,
-            email: "".to_string(),
+            email: "-".to_string(),
             create_time: util::unix_sec() as i32,
         };
-        use crate::schema::u_user;
-        diesel::insert_into(u_user::table)
-            .values(&u)
-            .execute(conn)
+        UserRepo::save_user(&conn,&u)
             .expect("Error insert user");
     });
 }
