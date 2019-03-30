@@ -10,8 +10,9 @@ use serde_json::Map;
 use crate::http::Context;
 use crate::http::WrappedResult;
 use crate::http::{flush_session, get_session, remove_session};
-use crate::{User, UserFlag};
+use crate::{User, UserFlag, conn};
 use crate::{NAME, VERSION};
+use crate::repo::UserRepo;
 
 #[derive(FromForm, Debug)]
 pub struct LoginParams {
@@ -21,11 +22,11 @@ pub struct LoginParams {
 
 #[post("/login", data = "<user>")]
 pub fn login(mut cookies: Cookies, user: Form<LoginParams>) -> WrappedResult {
-    if let Some(u) = User::get_user(&user.user) {
+    if let Some(u) = UserRepo::get_user(&conn(),&user.user) {
         if user.pwd != u.pwd {
             return WrappedResult::new(2, "密码不正确", "");
         }
-        let flags = (UserFlag::Enabled as i8, UserFlag::SuperUser as i8);
+        let flags = (UserFlag::Enabled as i16, UserFlag::SuperUser as i16);
         if u.flag & flags.0 != flags.0 {
             return WrappedResult::new(2, "用户已停用", "");
         }
@@ -96,7 +97,7 @@ pub fn initial(ctx: Context) -> JsonValue {
     match get_session(&sid) {
         Some(d) => {
             let user_id = d.get("UserID").unwrap().to_string();
-            return match User::get_user(&user_id) {
+            return match UserRepo::get_user(&conn(),&user_id) {
                 Some(u) => json!({"sys_name":NAME,
                 "version":VERSION,
                 "user":{
@@ -105,7 +106,7 @@ pub fn initial(ctx: Context) -> JsonValue {
                     "nick_name":u.name,
                     "flag":u.flag,
                     "email":u.email,
-                    "api_enabled":u.api_tokens.len() > 0
+                    "api_enabled":true
                 }}),
                 None => json!({"code":2,"err_msg":"user not exists"}),
             };

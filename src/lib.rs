@@ -18,8 +18,7 @@ use std::sync::{Mutex, MutexGuard};
 
 use crate::jsa::ItemManager;
 
-pub use self::user::User;
-pub use self::user::UserFlag;
+pub use self::models::user::{User,UserFlag};
 use crate::models::domain;
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
@@ -33,8 +32,9 @@ mod models;
 mod paths;
 pub mod repo;
 mod schema;
-mod user;
+mod user2;
 pub mod util;
+pub mod errors;
 
 // App name
 const NAME: &str = "JSA";
