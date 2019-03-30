@@ -14,18 +14,19 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
-use std::sync::{Mutex, MutexGuard};
+use std::sync::Mutex;
 
 use crate::jsa::ItemManager;
 
-pub use self::models::user::{User,UserFlag};
-use crate::models::domain;
+pub use self::models::user::{User, UserFlag};
+
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
 use diesel::r2d2::Pool as DPool;
 use diesel::r2d2::PooledConnection;
 
 pub mod config;
+pub mod errors;
 pub mod http;
 mod jsa;
 mod models;
@@ -34,7 +35,6 @@ pub mod repo;
 mod schema;
 mod user2;
 pub mod util;
-pub mod errors;
 
 // App name
 const NAME: &str = "JSA";

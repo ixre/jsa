@@ -11,9 +11,13 @@ use rocket::outcome::Outcome::Success;
 use rocket::Data;
 use rocket::Request;
 use rocket::Route;
-
 mod console;
 mod user;
+mod domain;
+
+
+use self::domain::*;
+use self::user::*;
 
 /// examples:
 /// ```
@@ -51,7 +55,7 @@ impl<'a> FromData<'a> for PagingParams {
         let mut string = String::with_capacity((NAME_LIMIT / 2) as usize);
         let outcome = match stream.read_to_string(&mut string) {
             Ok(_) => Success(string),
-            Err(e) => Failure((Status::InternalServerError, ())),
+            Err(_e) => Failure((Status::InternalServerError, ())),
         };
         // Returning `Borrowed` here means we get `Borrowed` in `from_data`.
         Transform::Borrowed(outcome)
@@ -87,6 +91,8 @@ pub fn get_routes() -> Vec<Route> {
         console::logout,
         user::user_list,
         user::get_user,
-        user::save_user
+        user::save_user,
+        domain_list,
+        save_domain
     ]
 }

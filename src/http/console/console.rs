@@ -10,9 +10,9 @@ use serde_json::Map;
 use crate::http::Context;
 use crate::http::WrappedResult;
 use crate::http::{flush_session, get_session, remove_session};
-use crate::{User, UserFlag, conn};
-use crate::{NAME, VERSION};
 use crate::repo::UserRepo;
+use crate::{conn, UserFlag};
+use crate::{NAME, VERSION};
 
 #[derive(FromForm, Debug)]
 pub struct LoginParams {
@@ -22,7 +22,7 @@ pub struct LoginParams {
 
 #[post("/login", data = "<user>")]
 pub fn login(mut cookies: Cookies, user: Form<LoginParams>) -> WrappedResult {
-    if let Some(u) = UserRepo::get_user(&conn(),&user.user) {
+    if let Some(u) = UserRepo::get_user(&conn(), &user.user) {
         if user.pwd != u.pwd {
             return WrappedResult::new(2, "密码不正确", "");
         }
@@ -35,7 +35,7 @@ pub fn login(mut cookies: Cookies, user: Form<LoginParams>) -> WrappedResult {
         // Save to session storage
         let key = session::generate_id();
         let mut map = HashMap::new();
-        map.insert("UserID".to_string(), u.user.to_string());
+        map.insert("UserId".to_string(), u.id.to_string());
         map.insert("SuperUser".to_string(), super_str.clone());
         map.insert("NickName".to_string(), u.user.to_string());
         flush_session(&key, map);
@@ -46,7 +46,8 @@ pub fn login(mut cookies: Cookies, user: Form<LoginParams>) -> WrappedResult {
         ck_id.set_expires(expires);
         ck_id.set_path("/console/api");
         let mut map = Map::new();
-        map.insert("SessionID".into(), ck_id.value().into());
+        map.insert("UserId".into(), u.id.into());
+        map.insert("SessionId".into(), ck_id.value().into());
         map.insert("SuperUser".into(), super_str.into());
         cookies.add(ck_id);
         // return to client
@@ -78,14 +79,19 @@ fn session_id(cookies: &Cookies) -> String {
     String::from("")
 }
 
+
 #[post("/check_session")]
 pub fn check_session(cookies: Cookies) -> JsonValue {
     let sid = session_id(&cookies);
     if sid.len() == 0 {
         return json!({"code":1,"err_msg":"用户未登陆".to_string()});
     }
-    if let Some(_) = get_session(&sid) {
-        return json!({"code":0,"SessionID":sid});
+    if let Some(mp) = get_session(&sid) {
+
+        return json!({"code":0,"SessionID":sid,
+        "UserId": mp.get("UserId").unwrap(),
+        "SuperUser":mp.get("SuperUser").unwrap()
+        });
     }
     return json!({"code":2,"err_msg":"会话已过期".to_string()});
 }
@@ -96,8 +102,8 @@ pub fn initial(ctx: Context) -> JsonValue {
     let sid = session_id(&ctx.req.cookies());
     match get_session(&sid) {
         Some(d) => {
-            let user_id = d.get("UserID").unwrap().to_string();
-            return match UserRepo::get_user(&conn(),&user_id) {
+            let user_id:i32 = d.get("UserId").unwrap().parse().unwrap_or(0);
+            return match UserRepo::get(&conn(),user_id) {
                 Some(u) => json!({"sys_name":NAME,
                 "version":VERSION,
                 "user":{

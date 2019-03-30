@@ -1,7 +1,7 @@
 #[derive(Debug)]
 pub enum DataError {
     #[fail(display = "Error in getting result {}", _0)]
-    ResultError(#[cause]diesel::result::Error),
+    ResultError(#[cause] diesel::result::Error),
     #[fail(display = "Error in getting result {}", _0)]
     Error(String),
 }
@@ -19,8 +19,7 @@ impl From<diesel::result::Error> for DataError {
 }
 
 impl From<String> for DataError {
-    fn from(s: String) -> Self
-    {
+    fn from(s: String) -> Self {
         DataError::Error(s)
     }
 }

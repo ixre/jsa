@@ -196,6 +196,7 @@ fn test_get_users() {
             "tom".to_string(),
             User {
                 user: "tom".to_string(),
+                name: "".to_string(),
                 pwd: "".to_string(),
                 flag: 0,
                 email: "".to_string(),
@@ -210,6 +211,7 @@ fn test_get_users() {
             "william".to_string(),
             User {
                 user: "tom".to_string(),
+                name: "".to_string(),
                 pwd: "".to_string(),
                 flag: 0,
                 email: "".to_string(),
@@ -220,6 +222,7 @@ fn test_get_users() {
             "jack".to_string(),
             User {
                 user: "tom".to_string(),
+                name: "".to_string(),
                 pwd: "".to_string(),
                 flag: 0,
                 email: "".to_string(),

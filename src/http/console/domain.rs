@@ -1,38 +1,40 @@
-use rocket::request::Form;
-use rocket_contrib::json::JsonValue;
-
 use crate::http::console::PagingParams;
-use crate::repo::UserRepo;
-use crate::{conn, util, User, UserFlag};
+use rocket_contrib::json::JsonValue;
+use crate::{conn, User};
+use crate::repo::{DomainRepo, UserRepo};
+use rocket::request::Form;
+use rocket::http::Cookies;
+use crate::models::user::UserFlag;
+use crate::http::{session_user, Context};
 
-#[derive(FromForm, Debug)]
-pub struct UserEntity {
-    pub user: String,
-    pub name: String,
-    pub pwd: String,
-    pub flag: i16,
-    pub enabled: bool,
-    pub email: String,
-}
-
-#[post("/user/list", data = "<p>")]
-pub fn user_list(p: PagingParams) -> JsonValue {
+#[post("/domain/list", data = "<p>")]
+pub fn domain_list(p: PagingParams) -> JsonValue {
     let begin = ((p.page - 1) * p.rows) as i64;
     let over = begin + p.rows as i64;
-    let (total, rows) = UserRepo::take_users(&conn(), begin, over);
+    let (total, rows) = DomainRepo::take_domains(&conn(), begin, over);
     json!({"total":total,"rows":rows})
 }
 
-#[post("/user/get?<user>")]
-pub fn get_user(user: String) -> JsonValue {
-    match UserRepo::get_user(&conn(), &user) {
-        Some(u) => json!(u),
-        None => json!({"err_msg":"用户不存在"}),
-    }
+#[derive(FromForm, Debug)]
+pub struct DomainEntity{
+    pub domain:String,
+    pub user_id:i32,
+    pub notes:String,
+    pub state:bool
 }
 
-#[post("/user/save", data = "<user>")]
-pub fn save_user(user: Form<UserEntity>) -> JsonValue {
+
+
+#[post("/domain/save", data = "<domain>")]
+pub fn save_domain(ctx: Context,domain: Form<DomainEntity>) -> JsonValue {
+    let i =  UserFlag::SuperUser as i16;
+    let u = session_user(&ctx.req.cookies()).unwrap();
+    if (u.flag & i != i) && u.id != domain.user_id{
+       return json!({"code":1,"err_msg":"no such user"});
+    }
+    json!({})
+    /*
+
     let conn = conn();
     let mut u = UserRepo::get_user(&conn, &user.user).unwrap_or(User {
         id: 0,
@@ -72,4 +74,5 @@ pub fn save_user(user: Form<UserEntity>) -> JsonValue {
         Ok(_) => json!({"code":0}),
         Err(err) => json!({"code":1,"err_msg":err.message()}),
     }
+    */
 }

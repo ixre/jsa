@@ -9,8 +9,9 @@ use crate::models::user::{NewUser, UserFlag};
 use crate::{conn, util, Pool};
 
 pub use self::user::*;
+pub use self::domain::*;
 mod user;
-
+mod domain;
 
 /// Check database,if no data initialize somethings
 pub fn init_data() {

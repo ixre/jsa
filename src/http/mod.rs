@@ -13,11 +13,12 @@ use session::SessionStore;
 
 pub use self::jsa_request::all_request;
 pub use self::route::mount_routes;
-
+pub use self::user_session::session_user;
 pub mod console;
 pub mod index;
 mod jsa_request;
 mod route;
+mod user_session;
 
 pub struct Context<'a, 'r> {
     req: &'a Request<'r>,
@@ -84,3 +85,4 @@ pub fn flush_session(key: &str, map: HashMap<String, String>) {
 pub fn remove_session(key: &str) {
     SESSION_STORE.remove(&key.into());
 }
+
