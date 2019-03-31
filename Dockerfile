@@ -9,7 +9,7 @@ ADD ./Cargo.toml ./
 ADD ./src ./src
 # Fix permissions on source code and Build our application.
 RUN sudo chown -R rust:rust ../ && \
- apt-get install -y pkg-config libssl-dev &&\
+ sudo apt-get install -y pkg-config libssl-dev &&\
  rustup default nightly && rustup target add x86_64-unknown-linux-musl &&\
  rustup update &&\
  cargo build --release --target x86_64-unknown-linux-musl
