@@ -4,3 +4,6 @@
 
 DROP FUNCTION IF EXISTS diesel_manage_updated_at(_tbl regclass);
 DROP FUNCTION IF EXISTS diesel_set_updated_at();
+
+DROP TABLE IF EXISTS u_user CASCADE;
+DROP TABLE IF EXISTS d_domain CASCADE;

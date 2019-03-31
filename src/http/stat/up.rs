@@ -124,7 +124,9 @@ pub struct PostResult{
     /// 客户端IP
     pub client_ip:String,
     // 用户区域
-    pub user_district:String
+    pub user_district:String,
+    // 用户大致位置
+    pub user_place:String
 }
 
 #[get("/site_po")]
@@ -133,11 +135,15 @@ pub fn site_po<'a>(pack:Pack) ->response::Result<'a> {
     let d = DomainRepo::get_domain(&conn,pack.hash.to_owned());
     dbg!(&pack.pack);
     let callback = pack.get("callback").unwrap_or("_callback".to_string());
+    // 获取位置
+    let district = util::ip_district(pack.client_ip.clone());
+    // 包装结果
     let pr = PostResult{
         from: pack.get_from(),
         device_os: pack.get_os(),
         client_ip: pack.client_ip.clone(),
-        user_district:util::ip_district(pack.client_ip.clone()).expect("")
+        user_district:district.0,
+        user_place:district.1
     };
     let mut s = String::from(callback);
     s.push_str("(");
