@@ -1,7 +1,7 @@
 use crate::conn;
+use crate::schema::d_domain;
 use diesel::dsl::count;
 use diesel::prelude::*;
-use crate::schema::d_domain;
 
 /// The state of domain
 pub enum DomainState {
@@ -16,7 +16,7 @@ pub enum DomainFlag {
     Stat = 2,
 }
 
-#[derive(Queryable,Insertable,AsChangeset, Debug, Clone, Serialize, Deserialize)]
+#[derive(Queryable, Insertable, AsChangeset, Debug, Clone, Serialize, Deserialize)]
 #[table_name = "d_domain"]
 #[primary_key("id")]
 pub struct Domain {
@@ -41,20 +41,19 @@ pub struct NewDomain {
     pub notes: String,
     pub create_time: i32,
 }
-impl From<&Domain> for NewDomain{
+impl From<&Domain> for NewDomain {
     fn from(src: &Domain) -> Self {
-        Self{
+        Self {
             user_id: src.user_id,
             hash: src.hash.clone(),
             domain: src.domain.clone(),
             flag: src.flag,
             state: src.state,
-            notes:src.notes.clone(),
-            create_time: src.create_time
+            notes: src.notes.clone(),
+            create_time: src.create_time,
         }
     }
 }
-
 
 pub fn get_domain() {
     use crate::schema::d_domain::dsl::*;

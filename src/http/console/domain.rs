@@ -1,12 +1,13 @@
 use crate::http::console::PagingParams;
-use rocket_contrib::json::JsonValue;
-use crate::{conn, User, util};
-use crate::repo::{DomainRepo, UserRepo};
-use rocket::request::Form;
-use rocket::http::Cookies;
-use crate::models::user::UserFlag;
+use crate::http::user_session;
 use crate::http::{session_user, Context};
 use crate::models::domain::Domain;
+use crate::models::user::UserFlag;
+use crate::repo::{DomainRepo, UserRepo};
+use crate::{conn, util, User};
+use rocket::http::Cookies;
+use rocket::request::Form;
+use rocket_contrib::json::JsonValue;
 
 #[derive(FromForm, Debug)]
 pub struct DomainEntity {
@@ -18,13 +19,34 @@ pub struct DomainEntity {
 }
 
 #[post("/domain/list", data = "<p>")]
-pub fn domain_list(p: PagingParams) -> JsonValue {
+pub fn domain_list(p: PagingParams, ctx: Context) -> JsonValue {
+    let user_id: i32 = p
+        .data
+        .get("user_id")
+        .expect("缺少参数:user_id")
+        .parse()
+        .unwrap_or(0);
+    if !user_session::check_access(&ctx.req.cookies(), user_id) {
+        return user_session::access_denied();
+    }
     let begin = ((p.page - 1) * p.rows) as i64;
     let over = begin + p.rows as i64;
-    let (total, rows) = DomainRepo::take_domains(&conn(), begin, over);
+    let (total, rows) = DomainRepo::take_domains(&conn(), user_id, begin, over);
     json!({"total":total,"rows":rows})
 }
 
+#[post("/domain/get?<id>")]
+pub fn get_domain(id: i32, ctx: Context) -> JsonValue {
+    match DomainRepo::get(&conn(), id) {
+        Some(u) => {
+            if !user_session::check_access(&ctx.req.cookies(), u.user_id) {
+                return user_session::access_denied();
+            }
+            json!(u)
+        }
+        None => json!({"err_msg":"域名不存在"}),
+    }
+}
 
 #[post("/domain/save", data = "<entity>")]
 pub fn save_domain(ctx: Context, entity: Form<DomainEntity>) -> JsonValue {
@@ -36,8 +58,7 @@ pub fn save_domain(ctx: Context, entity: Form<DomainEntity>) -> JsonValue {
     let conn = &conn();
     let mut domain: Domain;
     if entity.id > 0 {
-        domain = DomainRepo::get(&conn, entity.id)
-            .expect("no such domain");
+        domain = DomainRepo::get(&conn, entity.id).expect("no such domain");
     } else {
         domain = Domain {
             id: 0,
@@ -55,10 +76,9 @@ pub fn save_domain(ctx: Context, entity: Form<DomainEntity>) -> JsonValue {
     domain.notes = entity.notes.clone();
     match DomainRepo::save(&conn, &domain) {
         Ok(_) => json!({"code":0}),
-        Err(err) => json!({"code":1,"err_msg":err.message()})
+        Err(err) => json!({"code":1,"err_msg":err.message()}),
     }
 }
-
 
 #[post("/domain/stat_js?<self_host>&<hash>")]
 pub fn stat_js(self_host: i16, hash: String, ctx: Context) -> JsonValue {
@@ -73,7 +93,7 @@ pub fn stat_js(self_host: i16, hash: String, ctx: Context) -> JsonValue {
         } else {
             js_url = util::self_pre_link(&ctx);
         }
-        js_url.push_str("/static/domain_stat.js");
+        js_url.push_str("/static/domain_stat.js?");
         js_url.push_str(&hash);
         return json!({"code":0,"url":js_url});
     }

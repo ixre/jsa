@@ -85,4 +85,3 @@ pub fn flush_session(key: &str, map: HashMap<String, String>) {
 pub fn remove_session(key: &str) {
     SESSION_STORE.remove(&key.into());
 }
-

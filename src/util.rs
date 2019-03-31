@@ -1,9 +1,9 @@
-use sha1::Sha1;
+use crate::http::Context;
 use md5;
-use std::time;
+use sha1::Sha1;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
-use crate::http::Context;
+use std::time;
 
 /// Generate user's pwd. It's use SHA1 algorithm
 pub fn pwd<P: Into<String>>(p: P) -> String {
@@ -40,14 +40,14 @@ fn test_hash() {
 }
 
 /// Get prefix link of current request url.
-pub fn self_pre_link(ctx:&Context)->String{
+pub fn self_pre_link(ctx: &Context) -> String {
     let host = ctx.header("Host");
     let origin = ctx.header("Origin");
-    if origin.ends_with(&host){
+    if origin.ends_with(&host) {
         return origin;
     }
-    let mut s = origin[0..origin.find("//")
-        .unwrap_or(0)].to_owned();
+    let mut s = origin[0..origin.find("//").unwrap_or(0)].to_owned();
+    s.push_str("//");
     s.push_str(&host);
     s
 }

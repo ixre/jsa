@@ -5,14 +5,14 @@ use diesel::dsl::*;
 use diesel::prelude::*;
 use diesel_migrations::run_pending_migrations_in_directory;
 
-use crate::{conn, Pool, User, util};
 use crate::models::user::{NewUser, UserFlag};
+use crate::{conn, util, Pool, User};
 
 pub use self::domain::*;
 pub use self::user::*;
 
-mod user;
 mod domain;
+mod user;
 
 /// Check database,if no data initialize somethings
 pub fn init_data() {
@@ -33,7 +33,7 @@ pub fn init_data() {
     // initialize users
     init(u_user.select(count(id)).first(&conn), |conn| {
         let u = User {
-            id:0,
+            id: 0,
             user: "root".to_string(),
             name: "root".to_string(),
             pwd: util::pwd("123456"),
@@ -43,7 +43,6 @@ pub fn init_data() {
             email: "-".to_string(),
             create_time: util::unix_sec() as i32,
         };
-        UserRepo::save_user(&conn,&u)
-            .expect("Error insert user");
+        UserRepo::save_user(&conn, &u).expect("Error insert user");
     });
 }

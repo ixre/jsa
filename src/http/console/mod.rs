@@ -12,9 +12,8 @@ use rocket::Data;
 use rocket::Request;
 use rocket::Route;
 mod console;
-mod user;
 mod domain;
-
+mod user;
 
 use self::domain::*;
 use self::user::*;
@@ -94,6 +93,7 @@ pub fn get_routes() -> Vec<Route> {
         user::save_user,
         domain_list,
         save_domain,
+        get_domain,
         stat_js
     ]
 }

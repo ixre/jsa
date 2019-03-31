@@ -61,7 +61,7 @@ fn attach_user_middleware(r: Rocket) -> Rocket {
 }
 
 fn check_login(req: &Request) -> bool {
-    if let Some(_) = req.cookies().get("SessionID").map(|cookie| cookie.value()) {
+    if let Some(_) = req.cookies().get("SessionID") {
         return true;
     }
     false
