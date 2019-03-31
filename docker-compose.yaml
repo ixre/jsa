@@ -5,7 +5,7 @@ services:
         ports:
             - "8302:8302"
         volumes:
-            - ./conf:/conf
+            - ./data:/data
         restart: always
 
     postgres:
