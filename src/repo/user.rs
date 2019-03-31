@@ -2,7 +2,7 @@ use diesel::dsl::*;
 use diesel::prelude::*;
 
 use crate::errors::DataError;
-use crate::models::user::{User, NewUser};
+use crate::models::user::{NewUser, User};
 use crate::schema::u_user;
 use crate::schema::u_user::dsl::*;
 use crate::{Pool, UserFlag};
@@ -22,7 +22,7 @@ impl UserRepo {
         return (0, vec![]);
     }
 
-    pub fn get(conn:&Pool,user_id:i32)->Option<User>{
+    pub fn get(conn: &Pool, user_id: i32) -> Option<User> {
         match u_user.filter(id.eq(user_id)).get_result::<User>(conn) {
             Ok(u) => Some(u),
             _ => None,
@@ -55,7 +55,7 @@ impl UserRepo {
         }
         let mut v = v.clone();
         v.user = v.user.to_lowercase();
-        if v.id <= 0{
+        if v.id <= 0 {
             v.flag = v.flag | UserFlag::Activated as i16;
             return diesel::insert_into(u_user::table)
                 .values(NewUser::from(&v))

@@ -93,6 +93,7 @@ pub fn get_routes() -> Vec<Route> {
         user::get_user,
         user::save_user,
         domain_list,
-        save_domain
+        save_domain,
+        stat_js
     ]
 }

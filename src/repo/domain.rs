@@ -24,8 +24,18 @@ impl DomainRepo {
         }
         return (0, vec![]);
     }
+    /// Gets domain by domain_id
     pub fn get(conn:&Pool,domain_id:i32)->Option<Domain>{
         match d_domain.filter(id.eq(domain_id))
+            .get_result::<Domain>(conn) {
+            Ok(u) => Some(u),
+            _ => None,
+        }
+    }
+
+    /// Gets domain by hash string
+    pub fn get_domain(conn:&Pool,hash_str:String)->Option<Domain>{
+        match d_domain.filter(hash.eq(hash_str))
             .get_result::<Domain>(conn) {
             Ok(u) => Some(u),
             _ => None,

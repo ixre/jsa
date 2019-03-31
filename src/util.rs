@@ -3,6 +3,7 @@ use md5;
 use std::time;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
+use crate::http::Context;
 
 /// Generate user's pwd. It's use SHA1 algorithm
 pub fn pwd<P: Into<String>>(p: P) -> String {
@@ -36,4 +37,17 @@ fn test_hash() {
     let h1 = short_hash("to2.net");
     let h2 = short_hash("s.to2.net");
     assert_eq!(h1, h2);
+}
+
+/// Get prefix link of current request url.
+pub fn self_pre_link(ctx:&Context)->String{
+    let host = ctx.header("Host");
+    let origin = ctx.header("Origin");
+    if origin.ends_with(&host){
+        return origin;
+    }
+    let mut s = origin[0..origin.find("//")
+        .unwrap_or(0)].to_owned();
+    s.push_str(&host);
+    s
 }
