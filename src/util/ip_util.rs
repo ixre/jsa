@@ -7,7 +7,7 @@ lazy_static! {
 }
 pub fn ip_district<T: Into<String>>(ip: T) -> (String, String) {
     let ip = ip.into();
-    if ip.eq("127.0.0.1") || ip.starts_with("192.168.")
+    if ip.len()== 0 || ip.eq("127.0.0.1") || ip.starts_with("192.168.")
         || ip.starts_with("172.16.") || ip.starts_with("172.17.")
         || ip.starts_with("172.31.") || ip.starts_with("10.") {
         return (String::from("本地网络"), String::from("局域网"));

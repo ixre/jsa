@@ -1,0 +1,19 @@
+version: "3"
+services:
+    jsa:
+        image: jarry6/jsa:latest
+        ports:
+            - "8302:8302"
+        volumes:
+            - ./conf:/conf
+        restart: always
+
+    postgres:
+        image: postgres:11.2-alpine
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./postgres:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_PASSWORD:123456
+        restart: always
