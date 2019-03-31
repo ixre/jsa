@@ -1,8 +1,8 @@
-use super::Key;
-use super::SessionStore;
-use super::Session;
 use std::marker::PhantomData;
 
+use super::Key;
+use super::Session;
+use super::SessionStore;
 
 /// The sessioning middleware.
 ///

@@ -1,4 +1,5 @@
 use crate::schema::u_user;
+
 /// User flag
 pub enum UserFlag {
     /// 是否启用

@@ -2,6 +2,10 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #![feature(never_type)]
 #[macro_use]
+extern crate diesel;
+#[macro_use]
+extern crate diesel_migrations;
+#[macro_use]
 extern crate lazy_static;
 #[macro_use]
 extern crate rocket;
@@ -9,21 +13,17 @@ extern crate rocket;
 extern crate rocket_contrib;
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
-extern crate diesel;
-#[macro_use]
-extern crate diesel_migrations;
 
 use std::sync::Mutex;
-
-use crate::jsa::ItemManager;
-
-pub use self::models::user::{User, UserFlag};
 
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
 use diesel::r2d2::Pool as DPool;
 use diesel::r2d2::PooledConnection;
+
+use crate::jsa::ItemManager;
+
+pub use self::models::user::{User, UserFlag};
 
 pub mod config;
 pub mod errors;

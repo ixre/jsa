@@ -7,12 +7,12 @@ use rocket::request::Form;
 use rocket_contrib::json::JsonValue;
 use serde_json::Map;
 
-use crate::http::Context;
-use crate::http::WrappedResult;
-use crate::http::{flush_session, get_session, remove_session};
-use crate::repo::UserRepo;
 use crate::{conn, UserFlag};
 use crate::{NAME, VERSION};
+use crate::http::{flush_session, get_session, remove_session};
+use crate::http::Context;
+use crate::http::WrappedResult;
+use crate::repo::UserRepo;
 
 #[derive(FromForm, Debug)]
 pub struct LoginParams {

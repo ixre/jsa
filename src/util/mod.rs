@@ -1,9 +1,15 @@
-use crate::http::Context;
-use md5;
-use sha1::Sha1;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::time;
+
+use md5;
+use sha1::Sha1;
+
+use crate::http::Context;
+
+pub use self::ip_util::*;
+
+mod ip_util;
 
 /// Generate user's pwd. It's use SHA1 algorithm
 pub fn pwd<P: Into<String>>(p: P) -> String {

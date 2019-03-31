@@ -1,7 +1,8 @@
-use crate::conn;
-use crate::schema::d_domain;
 use diesel::dsl::count;
 use diesel::prelude::*;
+
+use crate::conn;
+use crate::schema::d_domain;
 
 /// The state of domain
 pub enum DomainState {
