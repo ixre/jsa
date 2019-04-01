@@ -27,7 +27,7 @@ COPY ./app ./app
 
 VOLUME ["/data"]
 EXPOSE 8302
-ENTRYPOINT ./jsa --data-dir /data
+ENTRYPOINT ./jsa -d /data
 
 
 

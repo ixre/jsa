@@ -1,10 +1,11 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 #![allow(unused)]
+extern crate openssl;
 #[macro_use]
 extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
-extern crate openssl;
+
 use std::path::PathBuf;
 
 use clap::{App, Arg};
@@ -32,17 +33,18 @@ fn rocket(address: &str, port: u16) -> rocket::Rocket {
 fn main() {
     let args = [
         Arg::with_name("data-dir")
+            .short("d")
             .takes_value(true)
             .default_value("./data"),
         Arg::with_name("port")
             .short("p")
             .takes_value(true)
             .default_value("8302"),
-        Arg::with_name("debug").short("d").takes_value(false),
+        Arg::with_name("print").takes_value(false),
     ];
     let matches = App::new("jsa").args(&args).get_matches();
     let data = matches.value_of("data-dir").unwrap();
-    let debug = matches.is_present("debug");
+    let debug = matches.is_present("print");
     let _port = matches.value_of("port").unwrap();
     let port: u16 = _port.trim().parse().unwrap();
     let addr: String = "0.0.0.0:".to_string() + _port;
