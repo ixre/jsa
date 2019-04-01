@@ -33,7 +33,7 @@ impl StatFrom {
 lazy_static! {
 pub static ref INTERNAL_STAT_FROM_VEC:Vec<StatFrom> = vec![
     StatFrom::new("百度",StatFromType::Referer as i16,"www.baidu.com"),
-    StatFrom::new("百度推广",StatFromType::Query as i16,"?bd-"),
+    StatFrom::new("百度推广",StatFromType::Referer as i16,"baidu.com/baidu.php"),
     StatFrom::new("百度知道",StatFromType::Referer as i16,"zhidao.baidu.com"),
     StatFrom::new("百度贴吧",StatFromType::Referer as i16,"tieba.baidu.com"),
     StatFrom::new("百度百科",StatFromType::Referer as i16,"baike.baidu.com"),
