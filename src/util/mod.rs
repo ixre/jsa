@@ -53,6 +53,9 @@ pub fn self_pre_link(ctx: &Context) -> String {
         return origin;
     }
     let mut s = origin[0..origin.find("//").unwrap_or(0)].to_owned();
+    if s.len() == 0{
+        s.push_str("http:");
+    }
     s.push_str("//");
     s.push_str(&host);
     s
