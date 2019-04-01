@@ -4,7 +4,7 @@
 extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
-
+extern crate openssl;
 use std::path::PathBuf;
 
 use clap::{App, Arg};
