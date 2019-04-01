@@ -60,7 +60,7 @@ impl Pack{
                 }
             }
         }
-        String::from("-")
+        String::from("")
     }
     fn get_os(&self)->String {
         if let Some(user_agent) = self.get("user_agent") {
