@@ -102,3 +102,29 @@ docker run -d --name jsa --volume /usr/jsa:/conf -p 8302:8302 --restart always j
     }
   }
 ```
+
+## 统计代码
+统计代码能获取用户来源,IP及位置，如下是一个获取信息并提交到例子：
+```html
+<!-- 统计代码 -->
+<script type="text/javascript">
+var _stat_callback = function(data){
+    var stat_str = JSON.stringify(data);
+    var raw_cookie = $b.cookie.read("_stat_data");
+    if(data["from"] != "-" || raw_cookie === ""){
+        $b.cookie.write("_stat_data",stat_str,100000000000);
+    }else{
+        stat_str =  raw_cookie|| stat_str;
+    }
+    console.log(stat_str);
+    $b.$fn(".stat-from-field").val(stat_str);
+};
+(function(c) {
+   var s = document.createElement("SCRIPT");
+   s.src = "//s.to2.net/static/domain_stat.js?fb5d7ff9&callback="+c;
+   var f = document.getElementsByTagName("SCRIPT")[0];
+   f.parentNode.insertBefore(s, f);
+})("_stat_callback");
+</script>
+
+```
