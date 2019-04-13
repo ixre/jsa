@@ -110,8 +110,9 @@ docker run -d --name jsa --volume /usr/jsa:/conf -p 8302:8302 --restart always j
 <script type="text/javascript">
 var _stat_callback = function(data){
     var stat_str = JSON.stringify(data);
-    var raw_cookie = $b.cookie.read("_stat_data");
-    if(data["from"] != "-" || raw_cookie === ""){
+    var raw_cookie = $b.cookie.read("_stat_data") || "{}";
+    var raw_obj = JSON.parse(raw_cookie);
+    if(raw_cookie.length === 2 || data["from"] != "-" || data["client_ip"] !== raw_obj["client_ip"]){
         $b.cookie.write("_stat_data",stat_str,100000000000);
     }else{
         stat_str =  raw_cookie|| stat_str;
