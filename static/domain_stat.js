@@ -1,4 +1,5 @@
 (function (w) {
+    var ng = w.navigator,d = document, de = d.documentElement, loc = w.location;
     // 通用方法
     var G ={
         // base64
@@ -23,9 +24,15 @@
                     + _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
             }
             return output;
+        },
+        finds:function(){
+            var s = d.getElementsByTagName('SCRIPT');
+            for(var i=0;i<s.length;i++){
+                if(s[i].src.indexOf("static/domain_stat.js?")!=-1)return s[i];
+            }
         }
     };
-    var ng = w.navigator,d = document, de = d.documentElement, loc = w.location;
+
     var pack = {
         // 获取浏览器类型
         user_agent: ng.userAgent,
@@ -43,9 +50,9 @@
         title: d.title
     };
     // 获取脚本信息
-    var ss = d.getElementsByTagName('SCRIPT');
+    var ss = G.finds();
     var matches = /([^\/]+\/\/[^\/]+)\/[^:\.]+\.js\?([^&]+)&callback=(.+)$/
-        .exec(ss[ss.length-1].src);
+        .exec(ss.src);
     // 域名路径
     var prefix_path = matches[1];
     // 域名Hash值
@@ -59,6 +66,6 @@
     var push = document.createElement("SCRIPT");
     push.src = prefix_path+"/stat/site_po?hash="+pack.domain_hash
         +"&pack="+G.encode(pack_str.substring(1));
-    ss[0].parentNode.append(push);
+    ss.parentNode.append(push);
     //console.log("--",G.encode(pack_str));
 })(window);
