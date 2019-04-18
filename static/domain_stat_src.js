@@ -43,9 +43,9 @@
         title: d.title
     };
     // 获取脚本信息
-    var scripts = d.getElementsByTagName('SCRIPT');
+    var ss = d.getElementsByTagName('SCRIPT');
     var matches = /([^\/]+\/\/[^\/]+)\/[^:\.]+\.js\?([^&]+)&callback=(.+)$/
-        .exec(scripts[0].src);
+        .exec(ss[ss.length-1].src);
     // 域名路径
     var prefix_path = matches[1];
     // 域名Hash值
@@ -59,6 +59,6 @@
     var push = document.createElement("SCRIPT");
     push.src = prefix_path+"/stat/site_po?hash="+pack.domain_hash
         +"&pack="+G.encode(pack_str.substring(1));
-    scripts[0].parentNode.append(push);
+    ss[0].parentNode.append(push);
     //console.log("--",G.encode(pack_str));
 })(window);
