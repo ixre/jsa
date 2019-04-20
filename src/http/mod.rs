@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
-use rocket::Outcome;
 use rocket::request;
-use rocket::Request;
 use rocket::request::FromRequest;
 use rocket::response;
 use rocket::response::content;
 use rocket::response::Responder;
+use rocket::Outcome;
+use rocket::Request;
 use session::HashSessionStore;
 use session::SessionPair;
 use session::SessionStore;
@@ -17,9 +17,9 @@ pub use self::user_session::session_user;
 
 pub mod console;
 pub mod index;
-mod stat;
 mod jsa_request;
 mod route;
+mod stat;
 mod user_session;
 
 pub struct Context<'a, 'r> {

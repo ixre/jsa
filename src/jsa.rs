@@ -49,7 +49,7 @@ impl Item {
         if user_agent.eq("") {
             return target;
         }
-        let os = ["Mac", "Windows", "Linux","Android","iPad","iPhone"]
+        let os = ["Mac", "Windows", "Linux", "Android", "iPad", "iPhone"]
             .iter()
             .find_map(|os| {
                 if user_agent.contains(os) {

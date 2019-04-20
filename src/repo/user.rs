@@ -1,11 +1,11 @@
 use diesel::dsl::*;
 use diesel::prelude::*;
 
-use crate::{Pool, UserFlag};
 use crate::errors::DataError;
 use crate::models::user::{NewUser, User};
 use crate::schema::u_user;
 use crate::schema::u_user::dsl::*;
+use crate::{Pool, UserFlag};
 
 pub struct UserRepo {}
 impl UserRepo {

@@ -1,9 +1,9 @@
 use rocket::http::Cookies;
 use rocket_contrib::json::JsonValue;
 
-use crate::{conn, User};
 use crate::http::get_session;
 use crate::repo::UserRepo;
+use crate::{conn, User};
 
 pub fn session_id(cookies: &Cookies) -> String {
     if let Some(ck) = cookies.get("SessionID") {

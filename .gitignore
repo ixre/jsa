@@ -9,3 +9,4 @@ node_modules
 *.log
 *.map
 *.vpp~*
+.DS_Store

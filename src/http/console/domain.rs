@@ -2,13 +2,13 @@ use rocket::http::Cookies;
 use rocket::request::Form;
 use rocket_contrib::json::JsonValue;
 
-use crate::{conn, User, util};
-use crate::http::{Context, session_user};
 use crate::http::console::PagingParams;
 use crate::http::user_session;
+use crate::http::{session_user, Context};
 use crate::models::domain::Domain;
 use crate::models::user::UserFlag;
 use crate::repo::{DomainRepo, UserRepo};
+use crate::{conn, util, User};
 
 #[derive(FromForm, Debug)]
 pub struct DomainEntity {

@@ -4,12 +4,12 @@ use std::hash::{Hash, Hasher};
 use diesel::dsl::*;
 use diesel::prelude::*;
 
-use crate::{Pool, util};
 use crate::errors::DataError;
 use crate::models::domain::*;
 use crate::models::user::NewUser;
 use crate::schema::d_domain;
 use crate::schema::d_domain::dsl::*;
+use crate::{util, Pool};
 
 pub struct DomainRepo {}
 

@@ -1,7 +1,7 @@
 use rocket::fairing::AdHoc;
 use rocket::http::Header;
-use rocket::Request;
 use rocket::response::Responder;
+use rocket::Request;
 use rocket::Rocket;
 use rocket_contrib::serve::StaticFiles;
 
@@ -18,7 +18,7 @@ pub fn mount_routes(r: Rocket) -> Rocket {
         )
         .mount("/static", StaticFiles::from("./static"))
         .mount("/console/api", console::get_routes())
-        .mount("/stat",stat::routes())
+        .mount("/stat", stat::routes())
         .mount("/console", StaticFiles::from("./app"));
     attach_user_middleware(r)
 }

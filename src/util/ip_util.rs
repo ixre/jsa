@@ -1,25 +1,36 @@
-use regex::NoExpand;
+//use regex::NoExpand;
 use regex::Regex;
 
+// 查询IP: www.cip.cc/xxx.xxx
 lazy_static! {
-    static ref IPIP_REGEX_TRIM :Regex = Regex::new("(<[^>]+?>)|\\r|\\s|\\n").unwrap();
-    static ref IPIP_PLACE  :Regex = Regex::new("地理位置(.+?)(产品详情|\\(可信度)").unwrap();
+    static ref IPIP_REGEX_TRIM: Regex = Regex::new("(<[^>]+?>)|\\r|\\s|\\n").unwrap();
+    static ref IPIP_PLACE: Regex =
+        Regex::new("地理位置(.+?)(产品详情|\\(可信度)").unwrap();
 }
 pub fn ip_district<T: Into<String>>(ip: T) -> (String, String) {
     let ip = ip.into();
-    if ip.len()== 0 || ip.eq("127.0.0.1") || ip.starts_with("192.168.")
-        || ip.starts_with("172.16.") || ip.starts_with("172.17.")
-        || ip.starts_with("172.31.") || ip.starts_with("10.") {
+    if ip.len() == 0
+        || ip.eq("127.0.0.1")
+        || ip.starts_with("192.168.")
+        || ip.starts_with("172.16.")
+        || ip.starts_with("172.17.")
+        || ip.starts_with("172.31.")
+        || ip.starts_with("10.")
+    {
         return (String::from("本地网络"), String::from("局域网"));
     }
     let params = [("ip", ip)];
     let client = reqwest::Client::new();
-    match client.post("https://www.ipip.net/ip.html")
-        .header(reqwest::header::USER_AGENT,
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:67.0) Gecko/20100101 Firefox/67.0")
+    match client
+        .post("https://www.ipip.net/ip.html")
+        .header(
+            reqwest::header::USER_AGENT,
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:67.0) Gecko/20100101 Firefox/67.0",
+        )
         .header(reqwest::header::REFERER, "https://www.ipip.net")
         .form(&params)
-        .send() {
+        .send()
+    {
         Ok(mut rsp) => {
             let body = rsp.text().unwrap_or("".to_string());
             let body: &str = &IPIP_REGEX_TRIM.replace_all(&body, "");
@@ -34,7 +45,7 @@ pub fn ip_district<T: Into<String>>(ip: T) -> (String, String) {
                 3 => (place_arr[0].clone(), place_arr[2].clone()),
                 2 => (place_arr[0].clone(), place_arr[1].clone()),
                 1 => (place_arr[0].clone(), String::from("")),
-                _ => (String::from(""), String::from(""))
+                _ => (String::from(""), String::from("")),
             }
         }
         Err(err) => {

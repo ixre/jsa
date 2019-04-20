@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::io::Read;
 
-use rocket::Data;
 use rocket::data::FromData;
 use rocket::data::Outcome;
 use rocket::data::Transform;
@@ -9,6 +8,7 @@ use rocket::data::Transformed;
 use rocket::http::Status;
 use rocket::outcome::Outcome::Failure;
 use rocket::outcome::Outcome::Success;
+use rocket::Data;
 use rocket::Request;
 use rocket::Route;
 

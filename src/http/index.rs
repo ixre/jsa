@@ -2,8 +2,8 @@ use std::io::Cursor;
 use std::path::PathBuf;
 
 use rocket::response;
-use rocket::Response;
 use rocket::response::NamedFile;
+use rocket::Response;
 
 use super::all_request;
 use super::Context;

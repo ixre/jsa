@@ -1,9 +1,9 @@
 use rocket::request::Form;
 use rocket_contrib::json::JsonValue;
 
-use crate::{conn, User, UserFlag, util};
 use crate::http::console::PagingParams;
 use crate::repo::UserRepo;
+use crate::{conn, util, User, UserFlag};
 
 #[derive(FromForm, Debug)]
 pub struct UserEntity {

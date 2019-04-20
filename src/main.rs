@@ -9,10 +9,10 @@ extern crate rocket_contrib;
 use std::path::PathBuf;
 
 use clap::{App, Arg};
-use rocket::Config;
 use rocket::config::Environment;
 use rocket::http::ContentType;
 use rocket::logger::LoggingLevel;
+use rocket::Config;
 use rocket::Request;
 use rocket::Rocket;
 
