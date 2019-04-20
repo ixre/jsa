@@ -60,6 +60,15 @@ impl Pack {
                 }
             }
         }
+        if let Some(host) = self.get("host") {
+            for it in stat::INTERNAL_STAT_FROM_VEC.iter() {
+                if it.detect_type == StatFromType::Host as i16 {
+                    if host.contains(&it.keyword) {
+                        return it.key.clone();
+                    }
+                }
+            }
+        }
         String::from("")
     }
     fn get_os(&self) -> String {

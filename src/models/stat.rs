@@ -7,6 +7,8 @@ pub enum StatFromType {
     Referer = 2,
     /// Detect base user-agent
     UserAgent = 3,
+    /// Detect by host
+    Host = 4,
 }
 
 /// Request from
@@ -87,5 +89,7 @@ lazy_static! {
         StatFrom::new("Bing", StatFromType::Referer as i16, ".bing.com"),
         StatFrom::new("Google", StatFromType::Referer as i16, ".google."),
         StatFrom::new("今日头条", StatFromType::Referer as i16, ".toutiao.com"),
+        StatFrom::new("今日惠州", StatFromType::Referer as i16, ".huizhou.cn"),
+        StatFrom::new("搜狗推广", StatFromType::Host as i16, "mf.anyewuyou.cn"),
     ];
 }
