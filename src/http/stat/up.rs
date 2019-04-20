@@ -42,6 +42,15 @@ impl Pack {
                 }
             }
         }
+        if let Some(host) = self.get("host") {
+            for it in stat::INTERNAL_STAT_FROM_VEC.iter() {
+                if it.detect_type == StatFromType::Host as i16 {
+                    if host.contains(&it.keyword) {
+                        return it.key.clone();
+                    }
+                }
+            }
+        }
         if let Some(referer) = self.get("referer") {
             for it in stat::INTERNAL_STAT_FROM_VEC.iter() {
                 if it.detect_type == StatFromType::Referer as i16 {
@@ -55,15 +64,6 @@ impl Pack {
             for it in stat::INTERNAL_STAT_FROM_VEC.iter() {
                 if it.detect_type == StatFromType::UserAgent as i16 {
                     if user_agent.contains(&it.keyword) {
-                        return it.key.clone();
-                    }
-                }
-            }
-        }
-        if let Some(host) = self.get("host") {
-            for it in stat::INTERNAL_STAT_FROM_VEC.iter() {
-                if it.detect_type == StatFromType::Host as i16 {
-                    if host.contains(&it.keyword) {
                         return it.key.clone();
                     }
                 }

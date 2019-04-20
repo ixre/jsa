@@ -1,14 +1,12 @@
-use std::ops::Deref;
-
 pub enum StatFromType {
-    /// Detect base location query
     Query = 1,
-    /// Detect base referer url
-    Referer = 2,
-    /// Detect base user-agent
-    UserAgent = 3,
     /// Detect by host
-    Host = 4,
+    Host = 2,
+    /// Detect base location query
+    /// Detect base referer url
+    Referer = 3,
+    /// Detect base user-agent
+    UserAgent = 4,
 }
 
 /// Request from
@@ -38,6 +36,11 @@ lazy_static! {
             "百度推广",
             StatFromType::Referer as i16,
             "www.baidu.com/baidu.php"
+        ),
+        StatFrom::new(
+            "百度-移动端",
+            StatFromType::Referer as i16,
+            "m.baidu.com/from="
         ),
         StatFrom::new(
             "百度推广-移动端",

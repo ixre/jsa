@@ -44,6 +44,8 @@
         referer: d.referrer,
         // 获取路径
         path: loc.pathname,
+        // 主机头
+        host:loc.hostname,
         // 获取查询条件
         query: loc.search,
         // 获取标题
