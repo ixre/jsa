@@ -11,6 +11,7 @@ use crate::models::stat;
 use crate::models::stat::StatFromType;
 use crate::repo::DomainRepo;
 use crate::{conn, util};
+use toml::value::Index;
 
 pub struct Pack {
     hash: String,
@@ -70,6 +71,18 @@ impl Pack {
             }
         }
         String::from("")
+    }
+
+    fn get_referer(&self) -> String {
+        if let Some(referer) = self.get("referer") {
+            if let Some(i) = referer.find("//") {
+                let s = &referer[i + 2..];
+                if let Some(i) = s.find("/") {
+                    return s[..i].to_owned();
+                }
+            }
+        }
+        return String::from("");
     }
     fn get_os(&self) -> String {
         if let Some(user_agent) = self.get("user_agent") {
@@ -131,9 +144,11 @@ fn response<'a>(s: String) -> response::Result<'a> {
 pub struct PostResult {
     // 来源
     pub from: String,
+    // 来源主机
+    pub referer: String,
     // 设备系统
     pub device_os: String,
-    /// 客户端IP
+    // 客户端IP
     pub client_ip: String,
     // 用户区域
     pub user_district: String,
@@ -152,6 +167,7 @@ pub fn site_po<'a>(pack: Pack) -> response::Result<'a> {
     // 包装结果
     let pr = PostResult {
         from: pack.get_from(),
+        referer: pack.get_referer(),
         device_os: pack.get_os(),
         client_ip: pack.client_ip.clone(),
         user_district: district.0,
