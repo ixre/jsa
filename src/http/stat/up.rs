@@ -1,17 +1,17 @@
-use core::borrow::Borrow;
+
 use std::collections::HashMap;
 use std::io::Cursor;
 
 use base64;
 use rocket::request;
 use rocket::request::FromRequest;
-use rocket::{response, Data, Outcome, Request, Response};
+use rocket::{response, Outcome, Request, Response};
 
 use crate::models::stat;
 use crate::models::stat::StatFromType;
 use crate::repo::DomainRepo;
 use crate::{conn, util};
-use toml::value::Index;
+
 
 pub struct Pack {
     hash: String,
@@ -159,7 +159,7 @@ pub struct PostResult {
 #[get("/site_po")]
 pub fn site_po<'a>(pack: Pack) -> response::Result<'a> {
     let conn = conn();
-    let d = DomainRepo::get_domain(&conn, pack.hash.to_owned());
+    let _d = DomainRepo::get_domain(&conn, pack.hash.to_owned());
     dbg!(&pack.pack);
     let callback = pack.get("callback").unwrap_or("_callback".to_string());
     // 获取位置

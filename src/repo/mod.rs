@@ -5,7 +5,7 @@ use diesel::dsl::*;
 use diesel::prelude::*;
 use diesel_migrations::run_pending_migrations_in_directory;
 
-use crate::models::user::{NewUser, UserFlag};
+use crate::models::user::{UserFlag};
 use crate::{conn, util, Pool, User};
 
 pub use self::domain::*;

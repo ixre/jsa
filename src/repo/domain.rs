@@ -1,12 +1,12 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
+
+use std::hash::{Hash};
 
 use diesel::dsl::*;
 use diesel::prelude::*;
 
 use crate::errors::DataError;
 use crate::models::domain::*;
-use crate::models::user::NewUser;
+
 use crate::schema::d_domain;
 use crate::schema::d_domain::dsl::*;
 use crate::{util, Pool};

@@ -13,7 +13,7 @@ use rocket::Request;
 use rocket::Route;
 
 use self::domain::*;
-use self::user::*;
+
 
 mod console;
 mod domain;
