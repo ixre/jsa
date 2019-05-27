@@ -94,5 +94,6 @@ lazy_static! {
         StatFrom::new("今日头条", StatFromType::Referer as i16, ".toutiao.com"),
         StatFrom::new("今日惠州", StatFromType::Referer as i16, ".huizhou.cn"),
         StatFrom::new("360推广", StatFromType::Host as i16, "mf.baolibao.cn"),
+        StatFrom::new("UC",StatFromType::Host as i16,"daili.meizhuli365.com"),
     ];
 }
