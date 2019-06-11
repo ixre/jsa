@@ -89,6 +89,7 @@ lazy_static! {
             StatFromType::Referer as i16,
             "so.com/search/eclk"
         ),
+        StatFrom::new("神马搜索",StatFromType::Referer as i16,"sm.cn/adclick?url="),
         StatFrom::new("Bing", StatFromType::Referer as i16, ".bing.com"),
         StatFrom::new("Google", StatFromType::Referer as i16, ".google."),
         StatFrom::new("今日头条", StatFromType::Referer as i16, ".toutiao.com"),
