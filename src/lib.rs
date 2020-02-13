@@ -62,9 +62,9 @@ pub fn init(conf: &str, debug: bool) {
     *CONF_PATH.lock().unwrap() = conf.to_string();
     let mut conf_path = CONF_PATH.lock().unwrap().clone();
     conf_path.push_str("/config.toml");
-    let cfg = config::read_config(&conf_path);
-    *POOL.lock().unwrap() = Some(init_pool(&cfg.db_url));
-    repo::init_data();
+    //let cfg = config::read_config(&conf_path);
+    //*POOL.lock().unwrap() = Some(init_pool(&cfg.db_url));
+    //repo::init_data();
 }
 
 fn init_pool(db_url: &str) -> PgPool {
